@@ -39,12 +39,12 @@ export function Nav() {
           </div>
         </div>
 
-        <div className="flex items-center gap-1 bg-navy-DEFAULT rounded-lg p-1 border border-navy-border">
+        <div className="flex items-center gap-1 bg-navy rounded-lg p-1 border border-navy-border">
           <Link href="/design/site-portfolio">
             <span
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all cursor-pointer block ${
                 isDesign
-                  ? "bg-accent text-navy-DEFAULT shadow-sm"
+                  ? "bg-accent text-navy shadow-sm"
                   : "text-gray-400 hover:text-white"
               }`}
             >
@@ -55,7 +55,7 @@ export function Nav() {
             <span
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all cursor-pointer block ${
                 !isDesign
-                  ? "bg-accent text-navy-DEFAULT shadow-sm"
+                  ? "bg-accent text-navy shadow-sm"
                   : "text-gray-400 hover:text-white"
               }`}
             >
@@ -66,7 +66,7 @@ export function Nav() {
       </div>
 
       {/* Sub-nav */}
-      <div className="bg-navy-DEFAULT border-b border-navy-border px-6 flex items-center">
+      <div className="bg-navy border-b border-navy-border px-6 flex items-center">
         {pages.map((page) => {
           const active = pathname === page.href || pathname.startsWith(page.href);
           return (

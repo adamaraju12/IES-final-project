@@ -301,7 +301,7 @@ export default function LiveOperationsPage() {
 
       {/* ── Floating chat button ── */}
       <button
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-accent text-navy-DEFAULT shadow-2xl hover:scale-110 active:scale-95 transition-transform flex items-center justify-center z-40 no-print"
+        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-accent text-navy shadow-2xl hover:scale-110 active:scale-95 transition-transform flex items-center justify-center z-40 no-print"
         title="Chat with DER AI (coming soon)"
         aria-label="Open AI assistant"
       >
