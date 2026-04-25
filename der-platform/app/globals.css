@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0a1628;
+  --foreground: #ffffff;
+  --card: #111d33;
+  --border: #1e3a5f;
+  --accent: #00d4ff;
+}
+
+body {
+  background-color: #0a1628;
+  color: #ffffff;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Print styles for Client One-Pager */
+@media print {
+  nav,
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  main {
+    padding-top: 0 !important;
+  }
+  .print-page {
+    width: 100%;
+    max-width: 100%;
+  }
+}

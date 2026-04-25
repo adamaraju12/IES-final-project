@@ -1,0 +1,344 @@
+{
+  "_meta": {
+    "description": "Single source of truth for the IES Final Project MVP. Every number displayed in the app reads from this file. Update placeholder values with Xendee outputs as they become available.",
+    "last_updated": "2026-04-24",
+    "data_sources": {
+      "real_public": "Silicon Valley Power tariffs, CAISO prices, NOAA weather, NREL solar data, SVP emissions factor",
+      "facility_public": "Digital Realty SJC37 capacity (48 MW) and location, publicly reported in Bloomberg, Fortune, Tom's Hardware Nov 2025",
+      "representative_assumptions": "PUE, GPU cluster split, cooling zones, load profile, all derived from Uptime Institute and NVIDIA published benchmarks",
+      "xendee_outputs": "DER sizing, NPV, LCOE, payback, hourly dispatch (filled in after Xendee simulation runs)"
+    }
+  },
+
+  "site": {
+    "name": "Santa Clara Hyperscale Facility",
+    "facility_reference": "Modeled on Digital Realty SJC37, Santa Clara, CA",
+    "location": "Santa Clara, California",
+    "iso": "CAISO",
+    "utility": "Silicon Valley Power",
+    "tagline": "Behind-the-meter DER retrofit proposal",
+    "peak_load_mw": 48,
+    "average_load_mw": 41,
+    "annual_consumption_gwh": 360,
+    "load_factor": 0.85,
+    "pue": 1.20,
+    "it_load_mw": 40,
+    "gpu_load_mw": 30,
+    "cooling_overhead_mw": 8,
+    "interconnection_queue_years": 3.5,
+    "our_time_to_power_months": 18
+  },
+
+  "site_context": {
+    "grid_operator": {
+      "name": "CAISO",
+      "lmp_avg_per_mwh": 52,
+      "note": "Dynamic pricing, strong duck curve, frequent negative midday prices"
+    },
+    "utility": {
+      "name": "Silicon Valley Power",
+      "tariff": "E-19 Large General Service",
+      "current_constraints": "Capacity-tight market, $450M grid upgrade through 2028",
+      "emissions_factor_kgco2_per_mwh": 285
+    },
+    "solar_resource": {
+      "ghi_kwh_per_m2_per_day": 5.4,
+      "peak_sun_hours_per_year": 1840,
+      "note": "Strong solar resource, but limited on-site land in Santa Clara"
+    },
+    "climate": {
+      "heating_degree_days": 2400,
+      "cooling_degree_days": 1500,
+      "free_cooling_months_per_year": 7
+    }
+  },
+
+  "load_profile_24h_mw": [
+    38, 37, 37, 36, 36, 37, 39, 41, 43, 44, 45, 46,
+    47, 47, 48, 48, 47, 46, 45, 44, 43, 41, 40, 39
+  ],
+
+  "gpu_clusters": [
+    {
+      "id": "GPU-Cluster-01",
+      "location": "Hall A, Row 3",
+      "role": "Training",
+      "power_mw": 8,
+      "utilization_pct": 92,
+      "flexibility": "High",
+      "shiftable_pct": 75,
+      "note": "Large language model training pod, NVIDIA H100"
+    },
+    {
+      "id": "GPU-Cluster-02",
+      "location": "Hall A, Row 5",
+      "role": "Training",
+      "power_mw": 7,
+      "utilization_pct": 88,
+      "flexibility": "High",
+      "shiftable_pct": 70,
+      "note": "Foundation model fine-tuning"
+    },
+    {
+      "id": "GPU-Cluster-03",
+      "location": "Hall B, Row 1",
+      "role": "Mixed",
+      "power_mw": 6,
+      "utilization_pct": 84,
+      "flexibility": "Medium",
+      "shiftable_pct": 35,
+      "note": "Research workloads, some SLA-bound"
+    },
+    {
+      "id": "GPU-Cluster-04",
+      "location": "Hall B, Row 4",
+      "role": "Inference",
+      "power_mw": 5,
+      "utilization_pct": 78,
+      "flexibility": "Low",
+      "shiftable_pct": 5,
+      "note": "Customer-facing real-time inference, strict SLA"
+    },
+    {
+      "id": "GPU-Cluster-05",
+      "location": "Hall C, Row 2",
+      "role": "Mixed",
+      "power_mw": 4,
+      "utilization_pct": 81,
+      "flexibility": "Medium",
+      "shiftable_pct": 30,
+      "note": "Batch and interactive ML workloads"
+    }
+  ],
+
+  "cooling_zones": [
+    {
+      "id": "Hall A",
+      "cooling_capacity_mw": 3.5,
+      "current_load_mw": 3.0,
+      "max_curtailment_mw": 0.5,
+      "curtailment_duration_min": 30,
+      "flexibility": "Medium"
+    },
+    {
+      "id": "Hall B",
+      "cooling_capacity_mw": 2.8,
+      "current_load_mw": 2.4,
+      "max_curtailment_mw": 0.4,
+      "curtailment_duration_min": 30,
+      "flexibility": "Medium"
+    },
+    {
+      "id": "Hall C",
+      "cooling_capacity_mw": 2.0,
+      "current_load_mw": 1.7,
+      "max_curtailment_mw": 0.3,
+      "curtailment_duration_min": 30,
+      "flexibility": "Low"
+    }
+  ],
+
+  "proposed_portfolio": {
+    "_xendee_note": "Replace these values with Xendee optimization outputs",
+    "pv_array": {
+      "nameplate_mw_dc": 25,
+      "nameplate_mw_ac": 20,
+      "annual_generation_gwh": 38,
+      "land_acres": 125,
+      "capacity_factor_pct": 17,
+      "siting_note": "Hybrid: 12 MW rooftop + 13 MW offsite PPA within 25 miles"
+    },
+    "bess": {
+      "energy_capacity_mwh": 100,
+      "power_capacity_mw": 25,
+      "duration_hours": 4,
+      "chemistry": "LFP",
+      "round_trip_efficiency_pct": 88
+    },
+    "fuel_cell": {
+      "capacity_mw": 12,
+      "type": "Solid Oxide (SOFC)",
+      "fuel": "Natural gas, hydrogen-ready",
+      "role": "Firm baseload",
+      "annual_capacity_factor_pct": 90
+    },
+    "grid_interconnection": {
+      "size_mw": 20,
+      "role": "Backup and excess export",
+      "ppa_structure": "Index plus capacity"
+    }
+  },
+
+  "alternative_portfolios": [
+    {
+      "name": "Solar Heavy",
+      "pv_mw": 40,
+      "bess_mwh": 60,
+      "fuel_cell_mw": 0,
+      "capex_millions": 110,
+      "lcoe_per_mwh": 78,
+      "cfe_match_pct": 58,
+      "recommended": false
+    },
+    {
+      "name": "Storage Heavy",
+      "pv_mw": 18,
+      "bess_mwh": 200,
+      "fuel_cell_mw": 8,
+      "capex_millions": 125,
+      "lcoe_per_mwh": 82,
+      "cfe_match_pct": 65,
+      "recommended": false
+    },
+    {
+      "name": "Hybrid",
+      "pv_mw": 25,
+      "bess_mwh": 100,
+      "fuel_cell_mw": 12,
+      "capex_millions": 95,
+      "lcoe_per_mwh": 72,
+      "cfe_match_pct": 72,
+      "recommended": true
+    }
+  ],
+
+  "economics": {
+    "_xendee_note": "Replace these values with Xendee financial outputs",
+    "capex_total_millions": 95,
+    "capex_breakdown": {
+      "pv_millions": 32,
+      "bess_millions": 30,
+      "fuel_cell_millions": 25,
+      "balance_of_system_millions": 8
+    },
+    "npv_millions_20yr": 28,
+    "lcoe_per_mwh": 72,
+    "payback_years": 7.5,
+    "irr_pct": 13.2,
+    "co2_avoided_tons_lifetime": 280000,
+    "cfe_match_annual_pct": 72,
+    "cfe_match_hourly_pct": 68,
+    "cfe_match_industry_benchmark_pct": 58,
+    "annual_savings_breakdown": {
+      "energy_cost_avoided_millions": 7.2,
+      "demand_charge_reduction_millions": 1.8,
+      "capacity_market_revenue_millions": 1.0,
+      "dr_program_revenue_millions": 0.4,
+      "cfe_premium_millions": 0.7,
+      "total_annual_millions": 11.1
+    },
+    "early_deployment_value": {
+      "lost_revenue_per_year_millions": 18.5,
+      "years_saved": 2.0,
+      "total_captured_millions": 37
+    }
+  },
+
+  "sensitivity_analysis": {
+    "_note": "Pre-computed lookup table. Each delta represents NPV change ($M) for a 1-unit move in the variable.",
+    "discount_rate": {"default_pct": 8, "range_pct": [4, 12], "npv_delta_per_pct": -2.4},
+    "ppa_price": {"default_per_mwh": 75, "range_per_mwh": [50, 100], "npv_delta_per_dollar": 0.32},
+    "natural_gas_price": {"default_per_mmbtu": 4.0, "range_per_mmbtu": [2, 8], "npv_delta_per_dollar": -0.85},
+    "capacity_payment": {"default_per_mw_day": 45, "range_per_mw_day": [20, 80], "npv_delta_per_dollar": 0.18},
+    "bess_capex": {"default_per_kwh": 300, "range_per_kwh": [200, 500], "npv_delta_per_dollar": -0.04}
+  },
+
+  "live_operations": {
+    "current_total_load_kw": 41200,
+    "net_grid_import_kw": 18500,
+    "battery_soc_pct": 76,
+    "battery_charging_rate_kw": 1800,
+    "co2_intensity_gco2_per_kwh": 312,
+    "cooling_flex_capacity_kw": 1200,
+    "recommendations": [
+      {
+        "title": "Shift GPU-Cluster-01 Training Job",
+        "description": "Move large training workload to 2:00-6:00 AM when CAISO prices and grid carbon are lowest.",
+        "impact": "Save $340, reduce 480 kg CO2",
+        "category": "compute"
+      },
+      {
+        "title": "Pre-cool Hall A",
+        "description": "Lower setpoint by 1 degC now while solar generation peaks. Reduce cooling during evening peak hours.",
+        "impact": "Save $180 on demand charges",
+        "category": "cooling"
+      },
+      {
+        "title": "Discharge Battery at 5 PM",
+        "description": "CAISO peak pricing window starts at 5 PM. Schedule battery discharge to offset 12 MW for 3 hours.",
+        "impact": "Save $920 on peak demand",
+        "category": "energy"
+      },
+      {
+        "title": "Defer Cluster-03 Maintenance",
+        "description": "Delay scheduled maintenance to Saturday off-peak window. Maintains training capacity during weekday peak.",
+        "impact": "Avoid $260 in lost capacity charges",
+        "category": "compute"
+      },
+      {
+        "title": "Enable Free Cooling Mode",
+        "description": "Outdoor conditions suitable for economizer mode starting 8 PM. Reduce mechanical cooling load by 30%.",
+        "impact": "Save 180 kW for 6 hours",
+        "category": "cooling"
+      }
+    ]
+  },
+
+  "dispatch_24h": {
+    "_note": "Hourly dispatch for typical day. Replace with Xendee output. All values in MW.",
+    "hours": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+    "load":     [38, 37, 37, 36, 36, 37, 39, 41, 43, 44, 45, 46, 47, 47, 48, 48, 47, 46, 45, 44, 43, 41, 40, 39],
+    "pv":       [0,  0,  0,  0,  0,  0,  2,  6,  11, 15, 18, 19, 20, 19, 18, 15, 11, 6,  2,  0,  0,  0,  0,  0],
+    "bess":     [-2, -2, -2, -2, -2, -2, -1, 0,  -3, -5, -6, -6, -6, -4, -2, 0,  4,  8,  10, 8,  4,  2,  0,  0],
+    "fuel_cell":[10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+    "grid":     [30, 29, 29, 28, 28, 29, 28, 25, 25, 24, 23, 23, 23, 22, 22, 23, 22, 22, 23, 26, 29, 29, 30, 29]
+  },
+
+  "scenarios": {
+    "base_case": {
+      "name": "Base Case",
+      "total_cost_per_day": 18500,
+      "co2_intensity_gco2_per_kwh": 312,
+      "battery_cycles": 1.2,
+      "gpu_load_shifted_mwh": 0,
+      "cooling_curtailed_mwh": 0
+    },
+    "high_flex": {
+      "name": "High Flexibility Mode",
+      "total_cost_per_day": 14200,
+      "co2_intensity_gco2_per_kwh": 245,
+      "battery_cycles": 1.8,
+      "gpu_load_shifted_mwh": 28,
+      "cooling_curtailed_mwh": 4.5,
+      "savings_vs_base_pct": 23.2
+    },
+    "max_savings": {
+      "name": "Maximum Cost Savings",
+      "total_cost_per_day": 12800,
+      "co2_intensity_gco2_per_kwh": 280,
+      "battery_cycles": 2.1,
+      "gpu_load_shifted_mwh": 35,
+      "cooling_curtailed_mwh": 6.2,
+      "savings_vs_base_pct": 30.8
+    }
+  },
+
+  "insights_30day": {
+    "total_energy_cost_thousands": 480,
+    "cost_savings_thousands": 218,
+    "cost_savings_vs_baseline_pct": 31,
+    "average_pue": 1.18,
+    "pue_change_vs_last_period": -0.04,
+    "carbon_avoided_tons": 285,
+    "carbon_equivalent_miles": 65000,
+    "solar_contribution_pct": 18.5,
+    "solar_generated_mwh": 3160,
+    "cooling_savings_thousands": 32,
+    "gpu_load_shifted_mwh": 720,
+    "weekly_cost_actual": [128000, 124000, 116000, 112000],
+    "weekly_savings": [52000, 54000, 56000, 56000],
+    "weekly_co2_intensity": [320, 310, 298, 285],
+    "co2_target": 320,
+    "monthly_cfe_match": [62, 64, 66, 68, 70, 72]
+  }
+}
