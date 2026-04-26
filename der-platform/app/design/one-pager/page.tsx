@@ -26,7 +26,6 @@ export default function OnePagerPage() {
     `With a $${economics.capex_total_millions}M capital investment and ${economics.irr_pct}% IRR, the project reaches payback in ${economics.payback_years} years and avoids ${(economics.co2_avoided_tons_lifetime / 1000).toFixed(0)}kt CO₂ over its lifetime.`,
   ];
 
-  // Mini timeline milestones
   const gridMilestones = [
     { label: "Queue Entry", pct: 0 },
     { label: "Study Complete", pct: 40 },
@@ -40,10 +39,10 @@ export default function OnePagerPage() {
   ];
 
   return (
-    <div className="p-6 max-w-4xl mx-auto pb-16">
+    <div className="p-6 max-w-6xl mx-auto pb-16">
 
       {/* ── Download button (outside print area) ── */}
-      <div className="flex justify-end mb-4 no-print">
+      <div className="flex justify-end mb-5 no-print">
         <button
           onClick={() => window.print()}
           className="flex items-center gap-2 px-5 py-2.5 bg-accent text-[#0a1628] text-sm font-bold rounded-lg hover:bg-accent/90 transition-colors"
@@ -56,68 +55,68 @@ export default function OnePagerPage() {
       <div className="print-page bg-navy-card border border-navy-border rounded-xl overflow-hidden">
 
         {/* Header bar */}
-        <div className="bg-[#0d1e35] border-b border-navy-border px-8 py-5 flex justify-between items-center">
+        <div className="bg-[#0d1e35] border-b border-navy-border px-10 py-7 flex justify-between items-center">
           <div>
-            <p className="text-accent text-xs font-semibold uppercase tracking-widest mb-1">DER Portfolio Platform · Proposal</p>
-            <h1 className="text-white text-xl font-bold">{site.name}</h1>
-            <p className="text-gray-400 text-xs mt-0.5">{site.location} · {site_context.utility.name} · {site_context.grid_operator.name}</p>
+            <p className="text-accent text-sm font-semibold uppercase tracking-widest mb-1">DER Portfolio Platform · Proposal</p>
+            <h1 className="text-white text-3xl font-bold">{site.name}</h1>
+            <p className="text-gray-400 text-sm mt-1">{site.location} · {site_context.utility.name} · {site_context.grid_operator.name}</p>
           </div>
           <div className="text-right">
-            <p className="text-gray-500 text-xs">Prepared by</p>
-            <p className="text-white text-sm font-semibold">IES Team</p>
-            <p className="text-gray-500 text-xs mt-0.5">{new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}</p>
+            <p className="text-gray-500 text-sm">Prepared by</p>
+            <p className="text-white text-base font-semibold">IES Team</p>
+            <p className="text-gray-500 text-sm mt-0.5">{new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}</p>
           </div>
         </div>
 
         {/* Hero stat line */}
-        <div className="bg-[#0a1628] border-b border-navy-border px-8 py-6 text-center">
-          <p className="text-gray-400 text-xs uppercase tracking-widest mb-2">Proposal Summary</p>
-          <p className="text-3xl font-bold text-white">
+        <div className="bg-[#0a1628] border-b border-navy-border px-10 py-10 text-center">
+          <p className="text-gray-400 text-sm uppercase tracking-widest mb-3">Proposal Summary</p>
+          <p className="text-5xl font-bold text-white">
             {ourMonths} months{" "}
-            <span className="text-gray-600 font-light mx-2">·</span>
+            <span className="text-gray-600 font-light mx-3">·</span>
             <span className="text-accent">${economics.npv_millions_20yr}M NPV</span>
-            <span className="text-gray-600 font-light mx-2">·</span>
+            <span className="text-gray-600 font-light mx-3">·</span>
             {economics.cfe_match_annual_pct}% CFE
           </p>
-          <p className="text-gray-500 text-xs mt-2">{site.tagline}</p>
+          <p className="text-gray-500 text-sm mt-3">{site.tagline}</p>
         </div>
 
         {/* Main body: two columns */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-0 divide-y md:divide-y-0 md:divide-x divide-navy-border">
 
           {/* Left: narrative bullets */}
-          <div className="px-8 py-6 space-y-4">
-            <p className="text-accent text-xs font-semibold uppercase tracking-widest mb-4">The Case for Acting Now</p>
+          <div className="px-10 py-8 space-y-5">
+            <p className="text-accent text-sm font-semibold uppercase tracking-widest mb-5">The Case for Acting Now</p>
             {bullets.map((b, i) => (
               <div key={i} className="flex gap-3">
-                <span className="text-accent font-bold text-sm mt-0.5 shrink-0">{i + 1}.</span>
-                <p className="text-gray-300 text-sm leading-relaxed">{b}</p>
+                <span className="text-accent font-bold text-base mt-0.5 shrink-0">{i + 1}.</span>
+                <p className="text-gray-300 text-base leading-relaxed">{b}</p>
               </div>
             ))}
           </div>
 
           {/* Right: KPI grid */}
-          <div className="px-8 py-6">
-            <p className="text-accent text-xs font-semibold uppercase tracking-widest mb-4">Key Metrics</p>
-            <div className="grid grid-cols-2 gap-3 mb-6">
+          <div className="px-10 py-8">
+            <p className="text-accent text-sm font-semibold uppercase tracking-widest mb-5">Key Metrics</p>
+            <div className="grid grid-cols-2 gap-4 mb-8">
               {kpiBoxes.map((k) => (
-                <div key={k.label} className="bg-[#0d1e35] rounded-lg p-3 border border-navy-border">
-                  <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">{k.label}</p>
-                  <p className="text-white text-lg font-bold tabular-nums">{k.value}</p>
+                <div key={k.label} className="bg-[#0d1e35] rounded-lg p-4 border border-navy-border">
+                  <p className="text-gray-500 text-xs uppercase tracking-wider mb-1.5">{k.label}</p>
+                  <p className="text-white text-2xl font-bold tabular-nums">{k.value}</p>
                 </div>
               ))}
             </div>
 
             {/* Mini timeline */}
-            <p className="text-accent text-xs font-semibold uppercase tracking-widest mb-4">Time-to-Power</p>
+            <p className="text-accent text-sm font-semibold uppercase tracking-widest mb-5">Time-to-Power</p>
             <div className="space-y-5">
               {/* Grid path */}
               <div>
                 <div className="flex justify-between mb-2">
-                  <span className="text-gray-500 text-xs">Traditional Grid Path</span>
+                  <span className="text-gray-500 text-sm">Traditional Grid Path</span>
                   <span className="text-red-400 text-sm font-semibold">{queueYears} yrs</span>
                 </div>
-                <div className="relative pb-6">
+                <div className="relative pb-7">
                   <div className="h-1 bg-red-900/60 rounded-full" />
                   {gridMilestones.map((m) => (
                     <div
@@ -139,10 +138,10 @@ export default function OnePagerPage() {
               {/* Our path */}
               <div className="mt-2">
                 <div className="flex justify-between mb-2">
-                  <span className="text-gray-500 text-xs">Our BTM DER Path</span>
+                  <span className="text-gray-500 text-sm">Our BTM DER Path</span>
                   <span className="text-green-400 text-sm font-semibold">{ourMonths} months</span>
                 </div>
-                <div className="relative pb-6">
+                <div className="relative pb-7">
                   <div className="h-1 bg-gray-800 rounded-full" />
                   <div
                     className="absolute top-0 left-0 h-1 bg-green-500 rounded-full"
@@ -165,9 +164,9 @@ export default function OnePagerPage() {
                 </div>
               </div>
 
-              {/* Early value callout — pushed down with mt-4 to clear labels */}
+              {/* Early value callout */}
               <div className="mt-6 rounded-lg bg-green-950/40 border border-green-800/40 px-4 py-3">
-                <p className="text-green-300 text-xs font-semibold">
+                <p className="text-green-300 text-sm font-semibold">
                   ⚡ ${earlyValue.total_captured_millions}M captured by deploying {earlyValue.years_saved} years earlier
                 </p>
               </div>
@@ -176,7 +175,7 @@ export default function OnePagerPage() {
         </div>
 
         {/* Footer */}
-        <div className="bg-[#0d1e35] border-t border-navy-border px-8 py-3 flex justify-between items-center">
+        <div className="bg-[#0d1e35] border-t border-navy-border px-10 py-4 flex justify-between items-center">
           <p className="text-gray-600 text-xs">Confidential · For client review only</p>
           <p className="text-gray-600 text-xs">Data sourced from Xendee simulation · CAISO · Silicon Valley Power</p>
         </div>

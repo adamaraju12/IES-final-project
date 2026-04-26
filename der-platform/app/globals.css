@@ -36,8 +36,11 @@ body {
   main {
     padding-top: 0 !important;
   }
+  /* Scale the enlarged screen card back down to fit one A4/letter page */
   .print-page {
     width: 100%;
     max-width: 100%;
+    zoom: 0.68;
+    transform-origin: top left;
   }
 }
