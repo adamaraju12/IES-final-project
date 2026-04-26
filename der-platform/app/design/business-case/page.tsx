@@ -139,7 +139,7 @@ export default function BusinessCasePage() {
   const dispatchData = dispatch_24h.hours.map((h, i) => ({
     hour: h,
     PV: Math.max(0, dispatch_24h.pv[i]),
-    "Fuel Cell": dispatch_24h.fuel_cell[i],
+    Diesel: dispatch_24h.diesel[i],
     Grid: Math.max(0, dispatch_24h.grid[i]),
     Battery: Math.max(0, dispatch_24h.bess[i]),
     Load: dispatch_24h.load[i],
@@ -149,7 +149,7 @@ export default function BusinessCasePage() {
   const capexData = [
     { name: "PV Array", value: economics.capex_breakdown.pv_millions },
     { name: "BESS", value: economics.capex_breakdown.bess_millions },
-    { name: "Fuel Cell", value: economics.capex_breakdown.fuel_cell_millions },
+    { name: "Diesel Backup", value: economics.capex_breakdown.diesel_millions },
     { name: "Balance of System", value: economics.capex_breakdown.balance_of_system_millions },
   ];
   const CAPEX_COLORS = ["#00d4ff", "#7c3aed", "#f59e0b", "#10b981"];
@@ -184,7 +184,7 @@ export default function BusinessCasePage() {
         <KPITile
           label="Total CapEx"
           value={`$${economics.capex_total_millions}M`}
-          context="PV + BESS + fuel cell + BOS"
+          context="PV + BESS + diesel + BOS"
         />
         <KPITile
           label="NPV (20 yr)"
@@ -217,6 +217,19 @@ export default function BusinessCasePage() {
           context="Annual 24/7 CFE score"
           highlight
         />
+      </div>
+
+      {/* ── Resilience callout ── */}
+      <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 flex items-start gap-3">
+        <div className="text-blue-400 text-lg mt-0.5 flex-shrink-0">🛡</div>
+        <div>
+          <p className="text-blue-300 font-semibold text-sm">
+            Resilience: ~36 hours of islanding capability
+          </p>
+          <p className="text-blue-400/70 text-xs mt-1">
+            12 MW diesel backup (200 hrs/yr) + 100 MWh BESS provides full-load islanding for 24–48 hours; longer under partial load curtailment
+          </p>
+        </div>
       </div>
 
       {/* ── Time-to-Power Timeline ── */}
@@ -366,7 +379,7 @@ export default function BusinessCasePage() {
                 formatter={(value) => <span style={{ color: "#9ca3af" }}>{value}</span>}
               />
               <Area type="monotone" dataKey="Grid" stackId="1" stroke="#6b7280" fill="url(#gridGrad)" name="Grid" />
-              <Area type="monotone" dataKey="Fuel Cell" stackId="1" stroke="#7c3aed" fill="url(#fcGrad)" name="Fuel Cell" />
+              <Area type="monotone" dataKey="Diesel" stackId="1" stroke="#7c3aed" fill="url(#fcGrad)" name="Diesel" />
               <Area type="monotone" dataKey="Battery" stackId="1" stroke="#00d4ff" fill="url(#battGrad)" name="Battery" />
               <Area type="monotone" dataKey="PV" stackId="1" stroke="#f59e0b" fill="url(#pvGrad)" name="PV" />
               <Area type="monotone" dataKey="Load" stackId={undefined} stroke="#ffffff" fill="none" strokeWidth={2} strokeDasharray="5 3" name="Load" dot={false} />

@@ -155,12 +155,13 @@
       "chemistry": "LFP",
       "round_trip_efficiency_pct": 88
     },
-    "fuel_cell": {
+    "diesel": {
       "capacity_mw": 12,
-      "type": "Solid Oxide (SOFC)",
-      "fuel": "Natural gas, hydrogen-ready",
-      "role": "Firm baseload",
-      "annual_capacity_factor_pct": 90
+      "type": "Diesel Generator",
+      "fuel": "Diesel",
+      "role": "Backup and resilience",
+      "annual_capacity_factor_pct": 8,
+      "runtime_hours_per_year": 200
     },
     "grid_interconnection": {
       "size_mw": 20,
@@ -174,7 +175,7 @@
       "name": "Solar Heavy",
       "pv_mw": 40,
       "bess_mwh": 60,
-      "fuel_cell_mw": 0,
+      "diesel_mw": 0,
       "capex_millions": 110,
       "lcoe_per_mwh": 78,
       "cfe_match_pct": 58,
@@ -184,7 +185,7 @@
       "name": "Storage Heavy",
       "pv_mw": 18,
       "bess_mwh": 200,
-      "fuel_cell_mw": 8,
+      "diesel_mw": 5,
       "capex_millions": 125,
       "lcoe_per_mwh": 82,
       "cfe_match_pct": 65,
@@ -194,8 +195,8 @@
       "name": "Hybrid",
       "pv_mw": 25,
       "bess_mwh": 100,
-      "fuel_cell_mw": 12,
-      "capex_millions": 95,
+      "diesel_mw": 12,
+      "capex_millions": 78,
       "lcoe_per_mwh": 72,
       "cfe_match_pct": 72,
       "recommended": true
@@ -204,11 +205,11 @@
 
   "economics": {
     "_xendee_note": "Replace these values with Xendee financial outputs",
-    "capex_total_millions": 95,
+    "capex_total_millions": 78,
     "capex_breakdown": {
       "pv_millions": 32,
       "bess_millions": 30,
-      "fuel_cell_millions": 25,
+      "diesel_millions": 8,
       "balance_of_system_millions": 8
     },
     "npv_millions_20yr": 28,
@@ -290,7 +291,7 @@
     "load":     [38, 37, 37, 36, 36, 37, 39, 41, 43, 44, 45, 46, 47, 47, 48, 48, 47, 46, 45, 44, 43, 41, 40, 39],
     "pv":       [0,  0,  0,  0,  0,  0,  2,  6,  11, 15, 18, 19, 20, 19, 18, 15, 11, 6,  2,  0,  0,  0,  0,  0],
     "bess":     [-2, -2, -2, -2, -2, -2, -1, 0,  -3, -5, -6, -6, -6, -4, -2, 0,  4,  8,  10, 8,  4,  2,  0,  0],
-    "fuel_cell":[10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+    "diesel":   [0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
     "grid":     [30, 29, 29, 28, 28, 29, 28, 25, 25, 24, 23, 23, 23, 22, 22, 23, 22, 22, 23, 26, 29, 29, 30, 29]
   },
 

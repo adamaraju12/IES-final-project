@@ -120,7 +120,48 @@ export default function ScenariosPage() {
   const [allowCoolingCurtail, setAllowCoolingCurtail] = useState(true);
 
   const base = scenarios.base_case;
-  const result = scenarios.high_flex;
+
+  // Compute result from form inputs
+  const BASE_COST = 18500;
+  const BASE_CO2 = 312;
+  const BASE_CYCLES = 1.2;
+
+  let costMult = 1.0;
+  let co2Mult = 1.0;
+  let cyclesMult = 1.0;
+
+  if (priceProfile === "high") costMult *= 1.25;
+  else if (priceProfile === "low") costMult *= 0.85;
+  else if (priceProfile === "volatile") { costMult *= 1.10; cyclesMult *= 1.5; }
+
+  if (loadProfile === "peak") costMult *= 1.20;
+  else if (loadProfile === "light") costMult *= 0.80;
+
+  if (pvAvail === "sunny") { costMult *= 0.90; co2Mult *= 0.85; }
+  else if (pvAvail === "cloudy") { costMult *= 1.10; co2Mult *= 1.10; }
+
+  if (batteryCycling === "conservative") cyclesMult *= 0.7;
+  else if (batteryCycling === "aggressive") { cyclesMult *= 1.6; costMult *= 0.92; }
+
+  let coolingMwh = 0;
+  if (coolingFlex === "medium") coolingMwh = 4.5;
+  else if (coolingFlex === "high") { coolingMwh = 7.0; costMult *= 0.95; }
+
+  if (allowGpuShift) costMult *= 0.90;
+
+  const computedCost = Math.round((BASE_COST * costMult) / 100) * 100;
+  const computedCo2 = Math.round(BASE_CO2 * co2Mult);
+  const computedCycles = Math.round(BASE_CYCLES * cyclesMult * 10) / 10;
+  const computedSavingsPct = parseFloat(((BASE_COST - computedCost) / BASE_COST * 100).toFixed(1));
+
+  const result = {
+    total_cost_per_day: computedCost,
+    co2_intensity_gco2_per_kwh: computedCo2,
+    battery_cycles: computedCycles,
+    gpu_load_shifted_mwh: allowGpuShift ? 28 : 0,
+    cooling_curtailed_mwh: allowCoolingCurtail ? coolingMwh : 0,
+    savings_vs_base_pct: computedSavingsPct,
+  };
 
   // Normalize each metric to 0-100 so mixed-unit metrics are visually comparable;
   // actual values are stored in *Actual fields for tooltip display.

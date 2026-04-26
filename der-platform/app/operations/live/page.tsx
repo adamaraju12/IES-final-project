@@ -68,7 +68,7 @@ export default function LiveOperationsPage() {
   const chartData = dispatch_24h.hours.map((hour, i) => ({
     hour: `${String(hour).padStart(2, "00")}:00`,
     Grid: dispatch_24h.grid[i],
-    "Fuel Cell": dispatch_24h.fuel_cell[i],
+    Diesel: dispatch_24h.diesel[i],
     Battery: Math.max(0, dispatch_24h.bess[i]),
     PV: dispatch_24h.pv[i],
     Load: dispatch_24h.load[i],
@@ -211,7 +211,7 @@ export default function LiveOperationsPage() {
               />
               <Area
                 type="monotone"
-                dataKey="Fuel Cell"
+                dataKey="Diesel"
                 stackId="dispatch"
                 stroke="#c4b5fd"
                 fill="#7c3aed"

@@ -21,7 +21,7 @@ export default function OnePagerPage() {
   const bullets = [
     `${site.name} faces a ${queueYears}-year grid interconnection queue, delaying operations and costing an estimated $${earlyValue.lost_revenue_per_year_millions}M per year in foregone revenue.`,
     `Our behind-the-meter DER solution delivers power in ${ourMonths} months — ${Math.round(queueYears * 12 - ourMonths)} months faster than the grid path — capturing $${earlyValue.total_captured_millions}M in early revenue.`,
-    `The hybrid portfolio (${data.proposed_portfolio.pv_array.nameplate_mw_dc} MW PV · ${data.proposed_portfolio.bess.energy_capacity_mwh} MWh BESS · ${data.proposed_portfolio.fuel_cell.capacity_mw} MW fuel cell) achieves ${economics.cfe_match_annual_pct}% annual clean energy match, beating the ${economics.cfe_match_industry_benchmark_pct}% industry benchmark.`,
+    `The hybrid portfolio (${data.proposed_portfolio.pv_array.nameplate_mw_dc} MW PV · ${data.proposed_portfolio.bess.energy_capacity_mwh} MWh BESS · ${data.proposed_portfolio.diesel.capacity_mw} MW diesel backup) achieves ${economics.cfe_match_annual_pct}% annual clean energy match, beating the ${economics.cfe_match_industry_benchmark_pct}% industry benchmark.`,
     `Powered by ${site_context.utility.name} (${site_context.utility.tariff}) with CAISO dynamic pricing, the system generates $${economics.annual_savings_breakdown.total_annual_millions}M in annual savings and revenue.`,
     `With a $${economics.capex_total_millions}M capital investment and ${economics.irr_pct}% IRR, the project reaches payback in ${economics.payback_years} years and avoids ${(economics.co2_avoided_tons_lifetime / 1000).toFixed(0)}kt CO₂ over its lifetime.`,
   ];
@@ -64,7 +64,7 @@ export default function OnePagerPage() {
           </div>
           <div className="text-right">
             <p className="text-gray-500 text-xs">Prepared by</p>
-            <p className="text-white text-sm font-semibold">Clean Energy Developer</p>
+            <p className="text-white text-sm font-semibold">IES Team</p>
             <p className="text-gray-500 text-xs mt-0.5">{new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}</p>
           </div>
         </div>

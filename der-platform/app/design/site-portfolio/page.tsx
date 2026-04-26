@@ -244,14 +244,15 @@ export default function SitePortfolioPage() {
             ]}
           />
           <AssetCard
-            title="Fuel Cell"
+            title="Diesel Backup"
             status="good"
             rows={[
-              { label: "Capacity", value: `${pp.fuel_cell.capacity_mw} MW` },
-              { label: "Type", value: pp.fuel_cell.type },
-              { label: "Fuel", value: pp.fuel_cell.fuel },
-              { label: "Role", value: pp.fuel_cell.role },
-              { label: "Capacity Factor", value: `${pp.fuel_cell.annual_capacity_factor_pct}%` },
+              { label: "Capacity", value: `${pp.diesel.capacity_mw} MW` },
+              { label: "Type", value: pp.diesel.type },
+              { label: "Fuel", value: pp.diesel.fuel },
+              { label: "Role", value: pp.diesel.role },
+              { label: "Capacity Factor", value: `${pp.diesel.annual_capacity_factor_pct}%` },
+              { label: "Runtime / Year", value: `${pp.diesel.runtime_hours_per_year} hrs` },
             ]}
           />
           <AssetCard
@@ -301,7 +302,7 @@ export default function SitePortfolioPage() {
                 {[
                   { label: "PV", value: `${portfolio.pv_mw} MW` },
                   { label: "BESS", value: `${portfolio.bess_mwh} MWh` },
-                  { label: "Fuel Cell", value: portfolio.fuel_cell_mw > 0 ? `${portfolio.fuel_cell_mw} MW` : "None" },
+                  { label: "Diesel", value: portfolio.diesel_mw > 0 ? `${portfolio.diesel_mw} MW` : "None" },
                   { label: "CapEx", value: `$${portfolio.capex_millions}M` },
                   { label: "LCOE", value: `$${portfolio.lcoe_per_mwh}/MWh` },
                   { label: "CFE Match", value: `${portfolio.cfe_match_pct}%` },

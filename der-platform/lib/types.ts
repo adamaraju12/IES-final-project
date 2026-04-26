@@ -83,12 +83,13 @@ export interface ProposedPortfolio {
     chemistry: string;
     round_trip_efficiency_pct: number;
   };
-  fuel_cell: {
+  diesel: {
     capacity_mw: number;
     type: string;
     fuel: string;
     role: string;
     annual_capacity_factor_pct: number;
+    runtime_hours_per_year: number;
   };
   grid_interconnection: { size_mw: number; role: string; ppa_structure: string };
 }
@@ -97,7 +98,7 @@ export interface AlternativePortfolio {
   name: string;
   pv_mw: number;
   bess_mwh: number;
-  fuel_cell_mw: number;
+  diesel_mw: number;
   capex_millions: number;
   lcoe_per_mwh: number;
   cfe_match_pct: number;
@@ -109,7 +110,7 @@ export interface Economics {
   capex_breakdown: {
     pv_millions: number;
     bess_millions: number;
-    fuel_cell_millions: number;
+    diesel_millions: number;
     balance_of_system_millions: number;
   };
   npv_millions_20yr: number;
@@ -165,7 +166,7 @@ export interface Dispatch24h {
   load: number[];
   pv: number[];
   bess: number[];
-  fuel_cell: number[];
+  diesel: number[];
   grid: number[];
 }
 
