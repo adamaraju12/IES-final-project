@@ -32,9 +32,9 @@ export function AssetCard({ title, status, rows, className }: AssetCardProps) {
       </div>
       <div className="space-y-2">
         {rows.map((row, i) => (
-          <div key={i} className="flex justify-between items-center">
-            <span className="text-gray-400 text-xs">{row.label}</span>
-            <span className="text-white text-xs font-medium tabular-nums">
+          <div key={i} className="flex justify-between items-start gap-3">
+            <span className="text-gray-400 text-xs shrink-0">{row.label}</span>
+            <span className="text-white text-xs font-medium text-right">
               {row.value}
             </span>
           </div>

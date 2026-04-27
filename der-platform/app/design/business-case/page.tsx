@@ -278,9 +278,8 @@ export default function BusinessCasePage() {
 
           {/* Our path */}
           <div className="space-y-0 mt-2">
-            <div className="flex justify-between items-center mb-3">
+            <div className="mb-3">
               <span className="text-xs uppercase tracking-wider text-gray-400">Our BTM DER Path</span>
-              <span className="text-xs text-green-400 font-semibold">{ourMonths} months</span>
             </div>
             <div className="relative">
               {/* Background full bar */}
@@ -292,19 +291,27 @@ export default function BusinessCasePage() {
               />
               {/* Dots + labels */}
               {[
-                { label: "Contract Signed", pct: 0 },
-                { label: "Permits", pct: 25 },
-                { label: "Energized ✓", pct: (ourMonths / (queueYears * 12)) * 100 },
+                { label: "Contract Signed", pct: 0, isEnd: false },
+                { label: "Permits", pct: 25, isEnd: false },
+                { label: "Energized", pct: (ourMonths / (queueYears * 12)) * 100, isEnd: true },
               ].map((m) => (
                 <div
                   key={m.label}
                   className="absolute flex flex-col items-center"
                   style={{
                     top: "-7px",
-                    left: m.pct === 0 ? "8px" : `calc(${m.pct}% - 0px)`,
+                    left: m.pct === 0 ? "8px" : `calc(${m.pct}%)`,
                     transform: m.pct === 0 ? "translateX(0)" : m.pct >= 80 ? "translateX(-100%)" : "translateX(-50%)",
                   }}
                 >
+                  {m.isEnd && (
+                    <span
+                      className="text-green-400 text-xs font-semibold whitespace-nowrap"
+                      style={{ position: "absolute", bottom: "calc(100% + 6px)" }}
+                    >
+                      {ourMonths} months
+                    </span>
+                  )}
                   <div className="w-4 h-4 rounded-full bg-green-500 border-2 border-green-200 shadow-lg shadow-green-900/50" />
                   <span className="text-green-300 text-xs font-medium mt-2 whitespace-nowrap">{m.label}</span>
                 </div>
