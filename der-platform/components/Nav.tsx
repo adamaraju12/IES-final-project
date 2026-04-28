@@ -8,6 +8,7 @@ const designPages = [
   { href: "/design/site-portfolio", label: "Site & Portfolio" },
   { href: "/design/business-case", label: "Business Case" },
   { href: "/design/one-pager", label: "Client One-Pager" },
+  { href: "/design/pathway-comparison", label: "Pathway Comparison" },
 ];
 
 const operationsPages = [

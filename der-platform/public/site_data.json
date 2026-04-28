@@ -508,5 +508,68 @@
     "weekly_co2_intensity": [340, 338, 339, 337],
     "co2_target": 320,
     "monthly_onsite_renewable_pct": [2.4, 2.5, 2.6, 2.5, 2.5, 2.5]
+  },
+  "pathway_comparison": {
+    "_source": "assumption (back-of-envelope comparative figures sourced by team to enable trade-off analysis; only diesel_primary maps directly to the Xendee model)",
+    "_note": "These are comparative values for a side-by-side analysis, not full Xendee re-runs. Diesel-primary numbers reflect the Xendee Apr 27 2026 run. Fuel cells and gas_grid are sourced from public benchmarks.",
+    "dimensions": [
+      { "key": "capex_millions", "label": "Total CapEx", "unit": "$M", "direction": "lower_is_better" },
+      { "key": "deployment_months", "label": "Deployment Timeline", "unit": "months", "direction": "lower_is_better" },
+      { "key": "co2_lifetime_kt", "label": "20-Year CO2", "unit": "kt", "direction": "lower_is_better" },
+      { "key": "npv_20yr_millions", "label": "20-Year NPV", "unit": "$M", "direction": "higher_is_better" },
+      { "key": "footprint_sqft", "label": "On-Site Footprint", "unit": "sqft", "direction": "lower_is_better" },
+      { "key": "deployment_risk", "label": "Deployment Risk", "unit": "qualitative", "direction": "lower_is_better" },
+      { "key": "best_for", "label": "Best For", "unit": "qualitative", "direction": "neutral" }
+    ],
+    "pathways": [
+      {
+        "id": "diesel_primary",
+        "name": "Diesel-Primary",
+        "tagline": "Fastest deployable bridge to grid",
+        "recommended": true,
+        "capex_millions": 34.28,
+        "deployment_months": 18,
+        "co2_lifetime_kt": null,
+        "npv_20yr_millions": -19.68,
+        "footprint_sqft": 305000,
+        "deployment_risk": "Low",
+        "best_for": "Speed-first AI compute operators",
+        "_source": "xendee (Apr 27 2026 run)"
+      },
+      {
+        "id": "fuel_cells",
+        "name": "Fuel Cells (Bloom SOFC)",
+        "tagline": "Cleaner gas, hyperscaler-proven",
+        "recommended": false,
+        "capex_millions": null,
+        "deployment_months": null,
+        "co2_lifetime_kt": null,
+        "npv_20yr_millions": null,
+        "footprint_sqft": null,
+        "deployment_risk": null,
+        "best_for": null,
+        "_source": "pending team research"
+      },
+      {
+        "id": "gas_grid",
+        "name": "Gas / Grid Hybrid",
+        "tagline": "Co-located gas plant + phased grid upgrade",
+        "recommended": false,
+        "capex_millions": null,
+        "deployment_months": null,
+        "co2_lifetime_kt": null,
+        "npv_20yr_millions": null,
+        "footprint_sqft": null,
+        "deployment_risk": null,
+        "best_for": null,
+        "_source": "pending team research"
+      }
+    ],
+    "optimize_for_options": [
+      { "key": "deployment_months", "label": "Time to Power" },
+      { "key": "co2_lifetime_kt", "label": "Carbon Footprint" },
+      { "key": "capex_millions", "label": "Upfront Cost" },
+      { "key": "npv_20yr_millions", "label": "Long-term Economics" }
+    ]
   }
 }

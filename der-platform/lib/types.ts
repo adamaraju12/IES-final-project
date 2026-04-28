@@ -13,6 +13,7 @@ export interface SiteData {
   dispatch_24h: Dispatch24h;
   scenarios: Scenarios;
   insights_30day: Insights30day;
+  pathway_comparison: PathwayComparison;
 }
 
 export interface Meta {
@@ -254,6 +255,38 @@ export interface Scenarios {
   base_case: ScenarioResult;
   high_flex: ScenarioResult;
   max_savings: ScenarioResult;
+}
+
+export interface Dimension {
+  key: string;
+  label: string;
+  unit: string;
+  direction: "lower_is_better" | "higher_is_better" | "neutral";
+}
+
+export interface Pathway {
+  id: string;
+  name: string;
+  tagline: string;
+  recommended: boolean;
+  capex_millions: number | null;
+  deployment_months: number | null;
+  co2_lifetime_kt: number | null;
+  npv_20yr_millions: number | null;
+  footprint_sqft: number | null;
+  deployment_risk: string | null;
+  best_for: string | null;
+}
+
+export interface OptimizeForOption {
+  key: string;
+  label: string;
+}
+
+export interface PathwayComparison {
+  dimensions: Dimension[];
+  pathways: Pathway[];
+  optimize_for_options: OptimizeForOption[];
 }
 
 export interface Insights30day {
