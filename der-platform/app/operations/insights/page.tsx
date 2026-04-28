@@ -51,7 +51,7 @@ export default function InsightsPage() {
     intensity,
   }));
 
-  const cfeData = insights_30day.monthly_cfe_match.map((cfe, i) => ({
+  const cfeData = insights_30day.monthly_onsite_renewable_pct.map((cfe, i) => ({
     month: `Month ${i + 1}`,
     cfe,
   }));
@@ -92,10 +92,10 @@ export default function InsightsPage() {
             highlight
           />
           <KPITile
-            label="Carbon Avoided"
-            value={insights_30day.carbon_avoided_tons}
+            label="Carbon Net (PV)"
+            value={insights_30day.carbon_net_tons}
             unit="t CO₂"
-            context={`Equivalent to ${(insights_30day.carbon_equivalent_miles / 1000).toFixed(0)}K miles`}
+            context={`≈${(insights_30day.carbon_equivalent_miles / 1000).toFixed(0)}K mi equivalent`}
           />
           <KPITile
             label="Solar Contribution"
@@ -139,7 +139,7 @@ export default function InsightsPage() {
                   tick={{ fill: "#6b7280", fontSize: 11 }}
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}K`}
+                  tickFormatter={(v: number) => `$${v.toLocaleString()}K`}
                 />
                 <YAxis
                   type="category"
@@ -155,10 +155,10 @@ export default function InsightsPage() {
                     return (
                       <ChartTooltip active={props.active} label={props.label}>
                         <p style={{ color: "#00d4ff" }}>
-                          Cost: ${((row?.cost ?? 0) / 1000).toFixed(0)}K
+                          Cost: ${(row?.cost ?? 0).toLocaleString()}K
                         </p>
                         <p style={{ color: "#4ade80" }}>
-                          Saved: ${((row?.savings ?? 0) / 1000).toFixed(0)}K
+                          Saved: ${(row?.savings ?? 0).toLocaleString()}K
                         </p>
                       </ChartTooltip>
                     );
@@ -188,7 +188,7 @@ export default function InsightsPage() {
                           fontWeight={500}
                           dominantBaseline="middle"
                         >
-                          Saved ${(value / 1000).toFixed(0)}K
+                          Saved ${value.toLocaleString()}K
                         </text>
                       );
                     }}
@@ -286,14 +286,17 @@ export default function InsightsPage() {
         </div>
       </section>
 
-      {/* ── 24/7 CFE Match Trend (full width) ── */}
+      {/* ── On-Site Renewable Share Trend (full width) ── */}
       <section>
         <SectionHeader
-          title="24/7 CFE Match Trend"
-          subtitle="Monthly clean energy matching percentage — 6-month rolling window"
+          title="On-Site Renewable Share Trend"
+          subtitle="Monthly on-site PV generation as % of total load — 6-month rolling window"
         />
         <div className="bg-navy-card rounded-lg border border-navy-border p-4 pt-6">
-          <ResponsiveContainer width="100%" height={280}>
+          <p className="text-gray-500 text-xs mb-4 px-2">
+            Industry 24/7 hourly CFE benchmarks: ~20–50% · Google 2024: ~64%. On-site PV alone caps at ~2.5% due to 100% footprint utilization; PPAs carry the balance.
+          </p>
+          <ResponsiveContainer width="100%" height={240}>
             <LineChart
               data={cfeData}
               margin={{ top: 8, right: 80, left: 0, bottom: 0 }}
@@ -305,7 +308,7 @@ export default function InsightsPage() {
                 axisLine={{ stroke: "#1e3a5f" }}
               />
               <YAxis
-                domain={[55, 85]}
+                domain={[0, 10]}
                 tick={{ fill: "#6b7280", fontSize: 11 }}
                 tickLine={false}
                 axisLine={false}
@@ -316,22 +319,10 @@ export default function InsightsPage() {
                 content={(props: any) => (
                   <ChartTooltip active={props.active} label={props.label}>
                     <p style={{ color: "#00d4ff" }}>
-                      CFE Match: {props.payload?.[0]?.value}%
+                      On-Site Renewable: {props.payload?.[0]?.value}%
                     </p>
                   </ChartTooltip>
                 )}
-              />
-              {/* Dashed reference line at 80% target */}
-              <ReferenceLine
-                y={80}
-                stroke="#6b7280"
-                strokeDasharray="5 3"
-                label={{
-                  value: "Target 80%",
-                  position: "right",
-                  fill: "#9ca3af",
-                  fontSize: 11,
-                }}
               />
               <Line
                 type="monotone"

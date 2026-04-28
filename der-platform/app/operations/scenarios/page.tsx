@@ -122,9 +122,9 @@ export default function ScenariosPage() {
   const base = scenarios.base_case;
 
   // Compute result from form inputs
-  const BASE_COST = 18500;
-  const BASE_CO2 = 312;
-  const BASE_CYCLES = 1.2;
+  const BASE_COST = 173100;
+  const BASE_CO2 = 339;
+  const BASE_CYCLES = 0;
 
   let costMult = 1.0;
   let co2Mult = 1.0;
@@ -433,8 +433,17 @@ export default function ScenariosPage() {
           title="Saved Scenarios"
           subtitle="Compare alternative operating strategies"
         />
+        <div className="bg-navy-card border border-navy-border rounded-lg p-4 mb-4">
+          <p className="text-sm text-gray-400">
+            <strong className="text-gray-300">Why scenario savings are modest.</strong>{" "}
+            SVP energy rates ($0.17/kWh) are among California{"'"}s lowest. Even aggressive operational
+            flexibility — GPU shifting, battery cycling, demand response — yields 2–3% OPEX savings.
+            The investment case for behind-the-meter DERs at this site rests on time-to-power and
+            resilience, not on energy arbitrage. See the Business Case page for the full thesis.
+          </p>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {Object.values(scenarios).map((scenario) => {
+          {Object.entries(scenarios).filter(([key]) => !key.startsWith('_')).map(([, scenario]) => {
             const isRecommended = scenario === scenarios.high_flex;
             return (
               <div

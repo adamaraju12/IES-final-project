@@ -7,23 +7,23 @@ export default function OnePagerPage() {
   const { site, economics, site_context } = data;
   const queueYears = site.interconnection_queue_years;
   const ourMonths = site.our_time_to_power_months;
-  const earlyValue = economics.early_deployment_value;
+  const ttp = economics.time_to_power_thesis;
 
   const kpiBoxes = [
-    { label: "Total CapEx", value: `$${economics.capex_total_millions}M` },
-    { label: "20-Year NPV", value: `$${economics.npv_millions_20yr}M` },
-    { label: "LCOE", value: `$${economics.lcoe_per_mwh}/MWh` },
-    { label: "Payback Period", value: `${economics.payback_years} yrs` },
-    { label: "24/7 CFE Match", value: `${economics.cfe_match_annual_pct}%` },
-    { label: "CO₂ Avoided", value: `${(economics.co2_avoided_tons_lifetime / 1000).toFixed(0)}kt` },
+    { label: "Total CapEx",       value: `$${economics.capex_total_millions}M`,                               muted: false },
+    { label: "20-Year NPV",       value: `$${economics.npv_millions_20yr}M`,                                  muted: false },
+    { label: "LCOE",              value: `$${economics.lcoe_per_mwh_optimized}/MWh`,                          muted: false },
+    { label: "On-Site Renewable", value: `${economics.cfe_metrics.onsite_renewable_share_of_load_pct}%`,      muted: false },
+    { label: "Net Value Captured",value: `$${ttp.net_value_captured_millions}M`,                              muted: false },
+    { label: "Payback Period",    value: economics.payback_label,                                             muted: true  },
   ];
 
   const bullets = [
-    `${site.name} faces a ${queueYears}-year grid interconnection queue, delaying operations and costing an estimated $${earlyValue.lost_revenue_per_year_millions}M per year in foregone revenue.`,
-    `Our behind-the-meter DER solution delivers power in ${ourMonths} months — ${Math.round(queueYears * 12 - ourMonths)} months faster than the grid path — capturing $${earlyValue.total_captured_millions}M in early revenue.`,
-    `The hybrid portfolio (${data.proposed_portfolio.pv_array.nameplate_mw_dc} MW PV · ${data.proposed_portfolio.bess.energy_capacity_mwh} MWh BESS · ${data.proposed_portfolio.diesel.capacity_mw} MW diesel backup) achieves ${economics.cfe_match_annual_pct}% annual clean energy match, beating the ${economics.cfe_match_industry_benchmark_pct}% industry benchmark.`,
-    `Powered by ${site_context.utility.name} (${site_context.utility.tariff}) with CAISO dynamic pricing, the system generates $${economics.annual_savings_breakdown.total_annual_millions}M in annual savings and revenue.`,
-    `With a $${economics.capex_total_millions}M capital investment and ${economics.irr_pct}% IRR, the project reaches payback in ${economics.payback_years} years and avoids ${(economics.co2_avoided_tons_lifetime / 1000).toFixed(0)}kt CO₂ over its lifetime.`,
+    `${site.name} faces a ${queueYears}-year grid interconnection queue, delaying operations and costing an estimated $${ttp.lost_revenue_per_year_millions}M per year in foregone revenue.`,
+    `Our behind-the-meter DER solution delivers power in ${ourMonths} months — ${Math.round(queueYears * 12 - ourMonths)} months faster than the grid path — capturing $${ttp.early_revenue_captured_millions}M in early revenue.`,
+    `The optimized portfolio (${data.proposed_portfolio.pv_total.nameplate_mw_dc} MW PV · ${data.proposed_portfolio.bess.energy_capacity_mwh} MWh BESS · ${data.proposed_portfolio.diesel.capacity_mw} MW diesel backup) delivers 3-day grid resilience and a $${economics.resilience.resilience_premium_dollars.toLocaleString()} resilience premium.`,
+    `Powered by ${site_context.utility.name} (${site_context.utility.tariff}) with CAISO dynamic pricing, the system generates $${(economics.annual_savings_breakdown.total_opex_savings_thousands / 1000).toFixed(1)}M in annual OPEX savings.`,
+    `With a $${economics.capex_total_millions}M investment, Xendee NPV of $${economics.npv_millions_20yr}M, and $${ttp.early_revenue_captured_millions}M early-revenue capture, the net project value is $${ttp.net_value_captured_millions}M — meaning the time-to-power thesis more than offsets the negative energy NPV.`,
   ];
 
   const gridMilestones = [
@@ -72,11 +72,12 @@ export default function OnePagerPage() {
         <div className="bg-[#0a1628] border-b border-navy-border px-10 py-10 text-center">
           <p className="text-gray-400 text-sm uppercase tracking-widest mb-3">Proposal Summary</p>
           <p className="text-5xl font-bold text-white">
-            {ourMonths} months{" "}
+            {economics.hero_callouts.primary}{" "}
             <span className="text-gray-600 font-light mx-3">·</span>
-            <span className="text-accent">${economics.npv_millions_20yr}M NPV</span>
+            {/* Shortened for one-pager hero — full string lives in hero_callouts.secondary */}
+            <span className="text-accent">{economics.hero_callouts.secondary.split(" by ")[0]}</span>
             <span className="text-gray-600 font-light mx-3">·</span>
-            {economics.cfe_match_annual_pct}% CFE
+            {economics.hero_callouts.tertiary}
           </p>
           <p className="text-gray-500 text-sm mt-3">{site.tagline}</p>
         </div>
@@ -100,7 +101,7 @@ export default function OnePagerPage() {
             <p className="text-accent text-sm font-semibold uppercase tracking-widest mb-5">Key Metrics</p>
             <div className="grid grid-cols-2 gap-4 mb-8">
               {kpiBoxes.map((k) => (
-                <div key={k.label} className="bg-[#0d1e35] rounded-lg p-4 border border-navy-border">
+                <div key={k.label} className={`bg-[#0d1e35] rounded-lg p-4 border border-navy-border${k.muted ? " opacity-50" : ""}`}>
                   <p className="text-gray-500 text-xs uppercase tracking-wider mb-1.5">{k.label}</p>
                   <p className="text-white text-2xl font-bold tabular-nums">{k.value}</p>
                 </div>
@@ -167,7 +168,7 @@ export default function OnePagerPage() {
               {/* Early value callout */}
               <div className="mt-6 rounded-lg bg-green-950/40 border border-green-800/40 px-4 py-3">
                 <p className="text-green-300 text-sm font-semibold">
-                  ⚡ ${earlyValue.total_captured_millions}M captured by deploying {earlyValue.years_saved} years earlier
+                  ⚡ ${ttp.early_revenue_captured_millions}M captured by deploying {ttp.years_saved} years earlier
                 </p>
               </div>
             </div>

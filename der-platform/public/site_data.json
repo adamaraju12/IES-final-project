@@ -1,55 +1,94 @@
 {
   "_meta": {
-    "description": "Single source of truth for the IES Final Project MVP. Every number displayed in the app reads from this file. Update placeholder values with Xendee outputs as they become available.",
-    "last_updated": "2026-04-24",
-    "data_sources": {
-      "real_public": "Silicon Valley Power tariffs, CAISO prices, NOAA weather, NREL solar data, SVP emissions factor",
-      "facility_public": "Digital Realty SJC37 capacity (48 MW) and location, publicly reported in Bloomberg, Fortune, Tom's Hardware Nov 2025",
-      "representative_assumptions": "PUE, GPU cluster split, cooling zones, load profile, all derived from Uptime Institute and NVIDIA published benchmarks",
-      "xendee_outputs": "DER sizing, NPV, LCOE, payback, hourly dispatch (filled in after Xendee simulation runs)"
-    }
+    "description": "Single source of truth for the IES Final Project MVP. Every number displayed in the app reads from this file.",
+    "last_updated": "2026-04-28",
+    "xendee_run": {
+      "report_title": "IES_Final Project - PV with Canopy with Diesel",
+      "address": "641 Walsh Ave, Santa Clara, CA 95050",
+      "run_date": "2026-04-27",
+      "prepared_by": "Joshua Davis",
+      "objective": "Minimize cost; ride-through 3-day outage"
+    },
+    "data_provenance": {
+      "real_public": "Silicon Valley Power tariffs (CB-3), CAISO LMPs, NOAA weather, NREL solar resource",
+      "facility_public": "48 MW peak load envelope and Santa Clara siting are public — Digital Realty SJC37 and similar Walsh Ave facilities reported in Bloomberg, Fortune, Tom's Hardware (Nov 2025)",
+      "representative_assumptions": "Internal load shape, GPU cluster split, PUE, cooling zones constructed from Uptime Institute and NVIDIA published benchmarks; no operational data from any specific facility is used",
+      "xendee_outputs": "Portfolio sizing, CapEx, NPV, LCOE, payback, IRR, annual energy/demand charges, fuel costs, generator runtime, CO2 emissions, ride-through resilience"
+    },
+    "field_source_legend": "Each major block tags individual fields with _source: 'xendee' (from the Apr 27 2026 Xendee run) or _source: 'assumption' (constructed from public benchmarks)."
   },
 
   "site": {
-    "name": "Santa Clara Hyperscale Facility",
-    "facility_reference": "Modeled on Digital Realty SJC37, Santa Clara, CA",
+    "name": "Santa Clara Hyperscale Facility (Representative Model)",
+    "facility_reference": "Modeled on a 48 MW Santa Clara data center (e.g., Digital Realty SJC37, Stack Infrastructure SVY10A); load shape and internal architecture are constructed from public benchmarks",
+    "address": "641 Walsh Ave, Santa Clara, CA 95050",
     "location": "Santa Clara, California",
     "iso": "CAISO",
     "utility": "Silicon Valley Power",
-    "tagline": "Behind-the-meter DER retrofit proposal",
+    "tariff": "CB-3",
+    "tagline": "Behind-the-meter DER deployment to bypass the SVP interconnection queue",
     "peak_load_mw": 48,
     "average_load_mw": 41,
-    "annual_consumption_gwh": 360,
-    "load_factor": 0.85,
+    "annual_consumption_gwh": 360.5,
+    "annual_consumption_kwh_xendee": 360521896,
+    "load_factor": 0.86,
     "pue": 1.20,
     "it_load_mw": 40,
     "gpu_load_mw": 30,
     "cooling_overhead_mw": 8,
     "interconnection_queue_years": 3.5,
-    "our_time_to_power_months": 18
+    "our_time_to_power_months": 18,
+    "_source_notes": {
+      "peak_load_mw": "xendee (48 MW input, confirmed in report cover)",
+      "annual_consumption_gwh": "xendee (360.5 GWh, p.4 of report)",
+      "interconnection_queue_years": "real_public (SVP grid queue per public reporting)",
+      "pue_and_internal_split": "assumption (Uptime Institute and NVIDIA benchmarks)"
+    }
   },
 
   "site_context": {
     "grid_operator": {
       "name": "CAISO",
       "lmp_avg_per_mwh": 52,
-      "note": "Dynamic pricing, strong duck curve, frequent negative midday prices"
+      "note": "Dynamic pricing, strong duck curve, frequent negative midday prices in spring"
     },
     "utility": {
       "name": "Silicon Valley Power",
-      "tariff": "E-19 Large General Service",
-      "current_constraints": "Capacity-tight market, $450M grid upgrade through 2028",
-      "emissions_factor_kgco2_per_mwh": 285
+      "tariff": "CB-3 Large Industrial",
+      "energy_price_per_kwh": 0.17,
+      "peak_demand_charge_per_kw": 16.19,
+      "current_constraints": "Capacity-tight market; ~$450M in grid upgrades not delivering until 2028; ~3.5-year interconnection queue for new large loads",
+      "emissions_factor_kgco2_per_mwh": 285,
+      "_source": "xendee inputs (energy price, demand charge); real_public (queue timeline, upgrade budget)"
+    },
+    "fuel_costs": {
+      "diesel_per_gallon": 3.59,
+      "_source": "xendee input"
     },
     "solar_resource": {
       "ghi_kwh_per_m2_per_day": 5.4,
       "peak_sun_hours_per_year": 1840,
-      "note": "Strong solar resource, but limited on-site land in Santa Clara"
+      "note": "Strong solar resource, but on-site footprint is the binding constraint"
+    },
+    "site_footprint": {
+      "rooftop_available_sqft": 54983,
+      "rooftop_used_sqft": 54983,
+      "rooftop_utilization_pct": 100,
+      "canopy_available_sqft": 248175,
+      "canopy_used_sqft": 248175,
+      "canopy_utilization_pct": 100,
+      "note": "Both rooftop and parking-canopy footprints are at 100% utilization in the optimized portfolio. Additional on-site PV is physically infeasible without offsite PPA.",
+      "_source": "xendee (Space Used table, p.25)"
     },
     "climate": {
       "heating_degree_days": 2400,
       "cooling_degree_days": 1500,
       "free_cooling_months_per_year": 7
+    },
+    "market_context": {
+      "comparable_btm_deployment": "ECL announced a 35 MW BTM data center in Santa Clara built in under a year by skipping the SVP queue (Nov 2025).",
+      "grid_pilot": "SVP is running a flexible-data-center pilot with Emerald AI, signalling utility appetite for DER-enabled sites.",
+      "_source": "real_public (Tom's Hardware Nov 2025 and SVP press releases)"
     }
   },
 
@@ -139,116 +178,233 @@
   ],
 
   "proposed_portfolio": {
-    "_xendee_note": "Replace these values with Xendee optimization outputs",
-    "pv_array": {
-      "nameplate_mw_dc": 25,
-      "nameplate_mw_ac": 20,
-      "annual_generation_gwh": 38,
-      "land_acres": 125,
-      "capacity_factor_pct": 17,
-      "siting_note": "Hybrid: 12 MW rooftop + 13 MW offsite PPA within 25 miles"
+    "_source": "xendee (Apr 27 2026 run, PV with Canopy with Diesel scenario)",
+    "_summary": "5.35 MW PV (rooftop + canopy) + 12.6 MWh / 3.16 MW BESS + 60 MW diesel backup. Sized to ride-through a 3-day grid outage and to fully utilize on-site solar real estate.",
+    "pv_rooftop": {
+      "nameplate_mw_dc": 0.971,
+      "capex_dollars": 2001698,
+      "annual_capacity_factor_pct": 18.99,
+      "footprint_sqft": 54983,
+      "footprint_utilization_pct": 100
+    },
+    "pv_canopy": {
+      "nameplate_mw_dc": 4.381,
+      "capex_dollars": 13415710,
+      "annual_capacity_factor_pct": 19.09,
+      "footprint_sqft": 248175,
+      "footprint_utilization_pct": 100,
+      "note": "Parking-canopy structures over surface lot"
+    },
+    "pv_total": {
+      "nameplate_mw_dc": 5.35,
+      "annual_generation_mwh": 8940,
+      "annual_generation_gwh": 8.94,
+      "share_of_load_pct": 2.48
     },
     "bess": {
-      "energy_capacity_mwh": 100,
-      "power_capacity_mw": 25,
+      "energy_capacity_mwh": 12.6,
+      "energy_capacity_kwh_xendee": 12622,
+      "power_capacity_mw": 3.16,
+      "power_capacity_kw_xendee": 3156,
       "duration_hours": 4,
-      "chemistry": "LFP",
-      "round_trip_efficiency_pct": 88
+      "chemistry": "LFP (assumed)",
+      "round_trip_efficiency_pct": 88,
+      "annual_cycles": 207,
+      "capex_dollars": 4859470
     },
     "diesel": {
-      "capacity_mw": 12,
-      "type": "Diesel Generator",
-      "fuel": "Diesel",
-      "role": "Backup and resilience",
-      "annual_capacity_factor_pct": 8,
-      "runtime_hours_per_year": 200
+      "capacity_mw": 60,
+      "unit_count": 20,
+      "unit_size_mw": 3,
+      "annual_runtime_hours": 72,
+      "annual_capacity_factor_pct": 0.57,
+      "annual_generation_mwh": 3002,
+      "annual_fuel_cost_dollars": 892261,
+      "fuel_price_per_gallon": 3.59,
+      "capex_dollars": 14000000,
+      "role": "Black-start and 3-day grid outage ride-through; not used for routine peaking",
+      "note": "Diesel was selected over fuel cell (earlier scope) because fuel-cell costs were too speculative for a 2026 financing decision."
     },
-    "grid_interconnection": {
-      "size_mw": 20,
-      "role": "Backup and excess export",
-      "ppa_structure": "Index plus capacity"
+    "totals": {
+      "capex_dollars": 34276876,
+      "capex_millions": 34.28
     }
   },
 
   "alternative_portfolios": [
     {
-      "name": "Solar Heavy",
-      "pv_mw": 40,
-      "bess_mwh": 60,
+      "name": "Recommended (PV + BESS + Diesel)",
+      "pv_mw": 5.35,
+      "bess_mwh": 12.6,
+      "bess_mw": 3.16,
+      "diesel_mw": 60,
+      "capex_millions": 34.28,
+      "lcoe_per_mwh": 179.5,
+      "ride_through_days": 3,
+      "onsite_renewable_pct": 2.48,
+      "recommended": true,
+      "_source": "xendee"
+    },
+    {
+      "name": "Diesel-Only (fastest-deploy)",
+      "pv_mw": 0,
+      "bess_mwh": 0,
+      "bess_mw": 0,
+      "diesel_mw": 60,
+      "capex_millions": 14.0,
+      "lcoe_per_mwh": null,
+      "ride_through_days": 3,
+      "onsite_renewable_pct": 0,
+      "recommended": false,
+      "note": "Indicative comparison only — not Xendee-optimized. Lowest CapEx and fastest deployment, but no renewable component and full SVP energy bill.",
+      "_source": "indicative"
+    },
+    {
+      "name": "PV + BESS Only (no diesel)",
+      "pv_mw": 5.35,
+      "bess_mwh": 50,
+      "bess_mw": 12.5,
       "diesel_mw": 0,
-      "capex_millions": 110,
-      "lcoe_per_mwh": 78,
-      "cfe_match_pct": 58,
-      "recommended": false
-    },
-    {
-      "name": "Storage Heavy",
-      "pv_mw": 18,
-      "bess_mwh": 200,
-      "diesel_mw": 5,
-      "capex_millions": 125,
-      "lcoe_per_mwh": 82,
-      "cfe_match_pct": 65,
-      "recommended": false
-    },
-    {
-      "name": "Hybrid",
-      "pv_mw": 25,
-      "bess_mwh": 100,
-      "diesel_mw": 12,
-      "capex_millions": 78,
-      "lcoe_per_mwh": 72,
-      "cfe_match_pct": 72,
-      "recommended": true
+      "capex_millions": 36.0,
+      "lcoe_per_mwh": null,
+      "ride_through_days": 0.3,
+      "onsite_renewable_pct": 2.48,
+      "recommended": false,
+      "note": "Indicative comparison only — not Xendee-optimized. Cleanest portfolio but cannot meet the 3-day ride-through requirement; would also require 4x larger BESS at ~$20M premium.",
+      "_source": "indicative"
     }
   ],
 
   "economics": {
-    "_xendee_note": "Replace these values with Xendee financial outputs",
-    "capex_total_millions": 78,
+    "_source": "xendee (Apr 27 2026 run)",
+    "_thesis_note": "Energy-arbitrage NPV is intentionally negative because Silicon Valley Power is one of California's cheapest utilities (~$0.17/kWh blended). The investment case rests on time-to-power and resilience, not on energy savings.",
+
+    "capex_total_millions": 34.28,
     "capex_breakdown": {
-      "pv_millions": 32,
-      "bess_millions": 30,
-      "diesel_millions": 8,
-      "balance_of_system_millions": 8
+      "pv_rooftop_millions": 2.00,
+      "pv_canopy_millions": 13.42,
+      "bess_millions": 4.86,
+      "diesel_millions": 14.00,
+      "_source": "xendee (Investments table, p.24)"
     },
-    "npv_millions_20yr": 28,
-    "lcoe_per_mwh": 72,
-    "payback_years": 7.5,
-    "irr_pct": 13.2,
-    "co2_avoided_tons_lifetime": 280000,
-    "cfe_match_annual_pct": 72,
-    "cfe_match_hourly_pct": 68,
-    "cfe_match_industry_benchmark_pct": 58,
+
+    "incentives": {
+      "federal_itc_year1_dollars": 6083100,
+      "federal_macrs_year1_dollars": 723900,
+      "federal_macrs_lifetime_dollars": 4156000,
+      "_source": "xendee (Detailed Cash Flow, p.11-18)"
+    },
+
+    "npv_dollars_year10": -24078440,
+    "npv_dollars_year20": -19684280,
+    "npv_millions_20yr": -19.68,
+    "lcoe_per_mwh_optimized": 179.5,
+    "lcoe_per_mwh_reference": 175.3,
+    "lcoe_per_mwh_premium": 4.2,
+    "payback_years": 99,
+    "payback_label": "More than 20 years",
+    "irr_pct": null,
+    "irr_label": "N/A or Negative",
+    "annual_cost_reduction_pct": -2.5,
+    "opex_savings_pct": 2.24,
+    "_npv_explainer": "NPV at year 20 of -$19.68M reflects the cost premium of the optimized microgrid vs. continuing to buy 100% from SVP at current tariffs. The negative NPV is the price of resilience (3-day ride-through) plus the entry ticket to the time-to-power capture below.",
+
+    "annual_cost_comparison_thousands": {
+      "reference_total": 63183,
+      "optimized_total": 64763,
+      "optimized_opex": 61765,
+      "optimized_annualized_capex": 2997,
+      "delta": 1580,
+      "_note": "Optimized total includes annualized capital costs. OPEX alone falls by ~$1.4M/yr."
+    },
+
     "annual_savings_breakdown": {
-      "energy_cost_avoided_millions": 7.2,
-      "demand_charge_reduction_millions": 1.8,
-      "capacity_market_revenue_millions": 1.0,
-      "dr_program_revenue_millions": 0.4,
-      "cfe_premium_millions": 0.7,
-      "total_annual_millions": 11.1
+      "_source": "xendee (Detailed Cash Flow Savings, p.15)",
+      "energy_charge_savings_thousands": 1941.1,
+      "demand_charge_savings_thousands": 664.0,
+      "demand_response_revenue_thousands": 20.3,
+      "fuel_purchase_cost_thousands": -892.3,
+      "der_maintenance_cost_thousands": -315.2,
+      "total_opex_savings_thousands": 1417.8,
+      "_note": "Net OPEX savings of ~$1.4M/yr. Negative entries are new costs (diesel fuel, DER maintenance) that did not exist in the reference (utility-only) case."
     },
-    "early_deployment_value": {
+
+    "co2_balance": {
+      "reference_emissions_tons_per_year": 122076,
+      "optimized_emissions_tons_per_year": 122201,
+      "net_change_tons_per_year": 125,
+      "pv_displaced_emissions_tons_per_year": 2548,
+      "diesel_added_emissions_tons_per_year": 2538,
+      "_source": "xendee (CO2 Emissions, p.23)",
+      "_note": "Net emissions barely change because the 60 MW diesel backup, although running only 72 hr/yr, emits ~2,500 tCO2/yr — almost exactly offsetting the PV contribution. The small (~0.1%) increase is within Xendee modeling tolerance."
+    },
+
+    "cfe_metrics": {
+      "_source": "derived from xendee outputs",
+      "onsite_renewable_share_of_load_pct": 2.48,
+      "onsite_renewable_share_note": "On-site PV (8.94 GWh/yr) divided by total load (360.5 GWh/yr). Caps out at this level because both rooftop and canopy footprints are at 100% utilization.",
+      "cfe_with_svp_grid_mix_estimate_pct": 32,
+      "cfe_with_svp_grid_mix_note": "Includes SVP's roughly 30% renewable RPS content plus the 2.48% on-site contribution. Indicative only — full hourly 24/7 matching was not modeled.",
+      "industry_24_7_benchmark_pct": "20-50",
+      "industry_24_7_benchmark_note": "Hyperscaler 24/7 hourly CFE matching ranges from ~20% (typical) to ~64% (Google 2024 disclosure). On-site DER alone cannot meet hyperscaler CFE goals at this site footprint; PPAs and grid-mix evolution carry the rest."
+    },
+
+    "resilience": {
+      "_source": "xendee (resiliency section, p.5)",
+      "ride_through_days": 3,
+      "ride_through_window_modeled": "March 21 12:00 AM through March 23 11:59 PM",
+      "resilience_premium_dollars": 1579517,
+      "resilience_premium_per_kwh_met": 0.51,
+      "resilience_premium_per_hour": 21938,
+      "industry_outage_cost_per_hour_range": "200000-1000000",
+      "industry_outage_cost_note": "Typical hyperscaler outage cost runs $200k-$1M+ per hour (Uptime Institute). The $21.9k/hr resilience premium is dwarfed by avoided outage cost on any single failure event.",
+      "diesel_units": 20,
+      "diesel_total_capacity_mw": 60
+    },
+
+    "time_to_power_thesis": {
+      "_source": "assumption (constructed from public reporting on hyperscaler revenue per MW)",
+      "_role": "Primary value pillar — this is why the project pencils despite negative energy NPV.",
+      "svp_queue_months": 42,
+      "btm_deployment_months": 18,
+      "months_saved": 24,
       "lost_revenue_per_year_millions": 18.5,
       "years_saved": 2.0,
-      "total_captured_millions": 37
+      "early_revenue_captured_millions": 37.0,
+      "xendee_npv_year20_millions": -19.68,
+      "net_value_captured_millions": 17.32,
+      "headline": "$17.3M net value: $37M early-revenue capture minus $19.7M Xendee energy NPV.",
+      "_assumptions": "Lost-revenue figure assumes ~$18.5M/yr of contracted hyperscaler revenue at risk while waiting for grid interconnection. Constructed from public lease/colocation rate benchmarks (~$1.5-2M per MW-year recurring) applied to a partial fill of a 48 MW facility during ramp."
+    },
+
+    "hero_callouts": {
+      "primary": "18 months to power",
+      "secondary": "$37M revenue captured by skipping the queue",
+      "tertiary": "3-day grid resilience",
+      "financial_summary": "$17.3M net value (after Xendee NPV)"
     }
   },
 
   "sensitivity_analysis": {
-    "_note": "Pre-computed lookup table. Each delta represents NPV change ($M) for a 1-unit move in the variable.",
-    "discount_rate": {"default_pct": 8, "range_pct": [4, 12], "npv_delta_per_pct": -2.4},
-    "ppa_price": {"default_per_mwh": 75, "range_per_mwh": [50, 100], "npv_delta_per_dollar": 0.32},
-    "natural_gas_price": {"default_per_mmbtu": 4.0, "range_per_mmbtu": [2, 8], "npv_delta_per_dollar": -0.85},
-    "capacity_payment": {"default_per_mw_day": 45, "range_per_mw_day": [20, 80], "npv_delta_per_dollar": 0.18},
-    "bess_capex": {"default_per_kwh": 300, "range_per_kwh": [200, 500], "npv_delta_per_dollar": -0.04}
+    "_note": "Pre-computed lookup table for Scenario Studio. Each delta represents NPV change ($M) for a 1-unit move in the variable. Coefficients are illustrative — derived from simple sensitivities, not from re-running Xendee.",
+    "_source": "assumption (illustrative coefficients)",
+    "discount_rate":      {"default_pct": 8,    "range_pct": [4, 12],     "npv_delta_per_pct": -2.4},
+    "svp_energy_price":   {"default_per_kwh": 0.17, "range_per_kwh": [0.10, 0.30], "npv_delta_per_dollar": 36.0,  "_note": "Higher SVP rates make the BTM investment more attractive (less negative NPV)."},
+    "diesel_fuel_price":  {"default_per_gallon": 3.59, "range_per_gallon": [2.5, 6.0], "npv_delta_per_dollar": -0.25},
+    "capacity_payment":   {"default_per_mw_day": 45,   "range_per_mw_day": [20, 80], "npv_delta_per_dollar": 0.18},
+    "bess_capex":         {"default_per_kwh": 385,     "range_per_kwh": [250, 500],  "npv_delta_per_dollar": -0.013},
+    "early_revenue":      {"default_millions_per_year": 18.5, "range_millions_per_year": [10, 30], "thesis_value_per_dollar": 2.0, "_note": "Each $1M/yr of early hyperscaler revenue adds ~$2M to the time-to-power thesis (2 years saved)."}
   },
 
   "live_operations": {
+    "_source": "assumption (illustrative real-time operational snapshot; not from a live SCADA feed)",
     "current_total_load_kw": 41200,
-    "net_grid_import_kw": 18500,
+    "net_grid_import_kw": 36800,
     "battery_soc_pct": 76,
-    "battery_charging_rate_kw": 1800,
+    "battery_charging_rate_kw": 1500,
+    "battery_max_power_kw": 3156,
+    "pv_generation_kw": 4200,
+    "diesel_generation_kw": 0,
     "co2_intensity_gco2_per_kwh": 312,
     "cooling_flex_capacity_kw": 1200,
     "recommendations": [
@@ -266,7 +422,7 @@
       },
       {
         "title": "Discharge Battery at 5 PM",
-        "description": "CAISO peak pricing window starts at 5 PM. Schedule battery discharge to offset 12 MW for 3 hours.",
+        "description": "CAISO peak pricing window starts at 5 PM. Schedule BESS discharge at 3 MW for 4 hours to shave evening demand peak.",
         "impact": "Save $920 on peak demand",
         "category": "energy"
       },
@@ -286,60 +442,71 @@
   },
 
   "dispatch_24h": {
-    "_note": "Hourly dispatch for typical day. Replace with Xendee output. All values in MW.",
-    "hours": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
-    "load":     [38, 37, 37, 36, 36, 37, 39, 41, 43, 44, 45, 46, 47, 47, 48, 48, 47, 46, 45, 44, 43, 41, 40, 39],
-    "pv":       [0,  0,  0,  0,  0,  0,  2,  6,  11, 15, 18, 19, 20, 19, 18, 15, 11, 6,  2,  0,  0,  0,  0,  0],
-    "bess":     [-2, -2, -2, -2, -2, -2, -1, 0,  -3, -5, -6, -6, -6, -4, -2, 0,  4,  8,  10, 8,  4,  2,  0,  0],
-    "diesel":   [0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-    "grid":     [30, 29, 29, 28, 28, 29, 28, 25, 25, 24, 23, 23, 23, 22, 22, 23, 22, 22, 23, 26, 29, 29, 30, 29]
+    "_note": "Representative 24-hour dispatch profile reflecting Xendee-sized portfolio (5.35 MW PV, 3.16 MW BESS, 60 MW diesel backup). Diesel sits at 0 MW on a normal operating day; it only runs during grid outages (72 hr/yr).",
+    "_source": "assumption (illustrative; the Xendee dispatch graph in the Apr 27 2026 PDF rendered without data)",
+    "hours":  [0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+    "load":   [38, 37, 37, 36, 36, 37, 39, 41, 43, 44, 45, 46, 47, 47, 48, 48, 47, 46, 45, 44, 43, 41, 40, 39],
+    "pv":     [0,  0,  0,  0,  0,  0,  0.3, 1.2, 2.5, 3.5, 4.2, 4.5, 4.5, 4.4, 4.0, 3.2, 2.0, 0.8, 0.1, 0,  0,  0,  0,  0],
+    "bess":   [-0.5,-0.5,-0.5,-0.5,-0.5,-0.5,-0.3, 0,  -1.0,-1.5,-1.8,-2.0,-2.0,-1.5,-1.0, 0,   1.5, 2.5, 3.0, 2.0, 1.0, 0.5, 0,  0],
+    "diesel": [0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
+    "grid":   [38.5,37.5,37.5,36.5,36.5,37.5,39.0,39.8,41.5,42.0,42.6,43.5,44.5,44.1,45.0,44.8,43.5,42.7,41.9,42.0,42.0,40.5,40.0,39.0]
   },
 
   "scenarios": {
+    "_note": "Scenario Studio results are computed from input-driven multipliers, not re-runs of Xendee. Daily $ values are derived from the annual reference cost ($63.2M reference, $61.8M optimized OPEX) divided by 365.",
+    "_source": "assumption (illustrative coefficients on top of Xendee annual totals)",
     "base_case": {
-      "name": "Base Case",
-      "total_cost_per_day": 18500,
-      "co2_intensity_gco2_per_kwh": 312,
-      "battery_cycles": 1.2,
+      "name": "Base Case (utility only, reference)",
+      "total_cost_per_day": 173100,
+      "co2_intensity_gco2_per_kwh": 339,
+      "battery_cycles": 0,
       "gpu_load_shifted_mwh": 0,
       "cooling_curtailed_mwh": 0
     },
     "high_flex": {
-      "name": "High Flexibility Mode",
-      "total_cost_per_day": 14200,
-      "co2_intensity_gco2_per_kwh": 245,
-      "battery_cycles": 1.8,
+      "name": "High Flexibility Mode (DERs + GPU shifting)",
+      "total_cost_per_day": 168500,
+      "co2_intensity_gco2_per_kwh": 332,
+      "battery_cycles": 0.6,
       "gpu_load_shifted_mwh": 28,
       "cooling_curtailed_mwh": 4.5,
-      "savings_vs_base_pct": 23.2
+      "savings_vs_base_pct": 2.7
     },
     "max_savings": {
       "name": "Maximum Cost Savings",
-      "total_cost_per_day": 12800,
-      "co2_intensity_gco2_per_kwh": 280,
-      "battery_cycles": 2.1,
+      "total_cost_per_day": 167000,
+      "co2_intensity_gco2_per_kwh": 335,
+      "battery_cycles": 0.8,
       "gpu_load_shifted_mwh": 35,
       "cooling_curtailed_mwh": 6.2,
-      "savings_vs_base_pct": 30.8
+      "savings_vs_base_pct": 3.5
     }
   },
 
   "insights_30day": {
-    "total_energy_cost_thousands": 480,
-    "cost_savings_thousands": 218,
-    "cost_savings_vs_baseline_pct": 31,
+    "_note": "Representative monthly snapshot during normal operation (no grid outage events). Numbers derived from Xendee annual totals divided by 12.",
+    "_source": "assumption (illustrative monthly run-rate from xendee annuals)",
+    "total_energy_cost_thousands": 5147,
+    "cost_savings_thousands": 118,
+    "cost_savings_vs_baseline_pct": 2.2,
     "average_pue": 1.18,
-    "pue_change_vs_last_period": -0.04,
-    "carbon_avoided_tons": 285,
-    "carbon_equivalent_miles": 65000,
-    "solar_contribution_pct": 18.5,
-    "solar_generated_mwh": 3160,
-    "cooling_savings_thousands": 32,
+    "pue_change_vs_last_period": -0.02,
+    "carbon_avoided_tons_pv_gross": 212,
+    "carbon_added_tons_diesel": 0,
+    "carbon_net_tons": 212,
+    "carbon_equivalent_miles": 540000,
+    "solar_contribution_pct": 2.5,
+    "solar_generated_mwh": 745,
+    "diesel_runtime_hours": 0,
+    "demand_response_events": 1,
+    "demand_response_revenue_dollars": 1700,
+    "battery_cycles_30day": 17,
+    "cooling_savings_thousands": 12,
     "gpu_load_shifted_mwh": 720,
-    "weekly_cost_actual": [128000, 124000, 116000, 112000],
-    "weekly_savings": [52000, 54000, 56000, 56000],
-    "weekly_co2_intensity": [320, 310, 298, 285],
+    "weekly_cost_actual": [1290, 1280, 1285, 1292],
+    "weekly_savings": [29, 30, 30, 29],
+    "weekly_co2_intensity": [340, 338, 339, 337],
     "co2_target": 320,
-    "monthly_cfe_match": [62, 64, 66, 68, 70, 72]
+    "monthly_onsite_renewable_pct": [2.4, 2.5, 2.6, 2.5, 2.5, 2.5]
   }
 }

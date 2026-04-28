@@ -170,6 +170,15 @@ export default function SitePortfolioPage() {
               <p className="text-gray-400 text-xs mt-1">{site_context.solar_resource.peak_sun_hours_per_year} peak sun hours/year</p>
               <p className="text-gray-500 text-xs mt-1">{site_context.solar_resource.note}</p>
             </div>
+            {/* Solar Footprint */}
+            <div className="bg-navy-card rounded-lg border border-navy-border p-4">
+              <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-2">Solar Footprint</p>
+              <p className="text-white font-semibold text-sm">Fully Utilized</p>
+              <p className="text-gray-400 text-xs mt-1">
+                Rooftop {site_context.site_footprint.rooftop_used_sqft.toLocaleString()} sqft (100%) · Canopy {site_context.site_footprint.canopy_used_sqft.toLocaleString()} sqft (100%)
+              </p>
+              <p className="text-gray-500 text-xs mt-1">{site_context.site_footprint.note}</p>
+            </div>
             {/* Climate */}
             <div className="bg-navy-card rounded-lg border border-navy-border p-4">
               <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-2">Climate</p>
@@ -219,17 +228,16 @@ export default function SitePortfolioPage() {
           title="Proposed DER Portfolio"
           subtitle="Recommended DER mix · Hybrid configuration"
         />
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           <AssetCard
-            title="PV Array"
+            title="PV Array (Rooftop + Canopy)"
             status="good"
             rows={[
-              { label: "Nameplate (DC)", value: `${pp.pv_array.nameplate_mw_dc} MW` },
-              { label: "Nameplate (AC)", value: `${pp.pv_array.nameplate_mw_ac} MW` },
-              { label: "Annual Generation", value: `${pp.pv_array.annual_generation_gwh} GWh` },
-              { label: "Land Required", value: `${pp.pv_array.land_acres} acres` },
-              { label: "Capacity Factor", value: `${pp.pv_array.capacity_factor_pct}%` },
-              { label: "Siting", value: pp.pv_array.siting_note },
+              { label: "Total Nameplate (DC)", value: `${pp.pv_total.nameplate_mw_dc} MW` },
+              { label: "Annual Generation", value: `${pp.pv_total.annual_generation_gwh} GWh` },
+              { label: "Share of Load", value: `${pp.pv_total.share_of_load_pct}%` },
+              { label: "Rooftop", value: `${pp.pv_rooftop.nameplate_mw_dc} MW · ${pp.pv_rooftop.footprint_sqft.toLocaleString()} sqft (100%)` },
+              { label: "Canopy", value: `${pp.pv_canopy.nameplate_mw_dc} MW · ${pp.pv_canopy.footprint_sqft.toLocaleString()} sqft (100%)` },
             ]}
           />
           <AssetCard
@@ -241,27 +249,18 @@ export default function SitePortfolioPage() {
               { label: "Duration", value: `${pp.bess.duration_hours} hours` },
               { label: "Chemistry", value: pp.bess.chemistry },
               { label: "Round-Trip Eff.", value: `${pp.bess.round_trip_efficiency_pct}%` },
+              { label: "Annual Cycles", value: `${pp.bess.annual_cycles}` },
             ]}
           />
           <AssetCard
             title="Diesel Backup"
             status="good"
             rows={[
-              { label: "Capacity", value: `${pp.diesel.capacity_mw} MW` },
-              { label: "Type", value: pp.diesel.type },
-              { label: "Fuel", value: pp.diesel.fuel },
-              { label: "Role", value: pp.diesel.role },
+              { label: "Total Capacity", value: `${pp.diesel.capacity_mw} MW` },
+              { label: "Configuration", value: `${pp.diesel.unit_count} × ${pp.diesel.unit_size_mw} MW units` },
+              { label: "Annual Runtime", value: `${pp.diesel.annual_runtime_hours} hrs/yr` },
               { label: "Capacity Factor", value: `${pp.diesel.annual_capacity_factor_pct}%` },
-              { label: "Runtime / Year", value: `${pp.diesel.runtime_hours_per_year} hrs` },
-            ]}
-          />
-          <AssetCard
-            title="Grid Interconnection"
-            status="good"
-            rows={[
-              { label: "Size", value: `${pp.grid_interconnection.size_mw} MW` },
-              { label: "Role", value: pp.grid_interconnection.role },
-              { label: "PPA Structure", value: pp.grid_interconnection.ppa_structure },
+              { label: "Role", value: pp.diesel.role },
             ]}
           />
         </div>
@@ -304,8 +303,9 @@ export default function SitePortfolioPage() {
                   { label: "BESS", value: `${portfolio.bess_mwh} MWh` },
                   { label: "Diesel", value: portfolio.diesel_mw > 0 ? `${portfolio.diesel_mw} MW` : "None" },
                   { label: "CapEx", value: `$${portfolio.capex_millions}M` },
-                  { label: "LCOE", value: `$${portfolio.lcoe_per_mwh}/MWh` },
-                  { label: "CFE Match", value: `${portfolio.cfe_match_pct}%` },
+                  { label: "LCOE", value: portfolio.lcoe_per_mwh != null ? `$${portfolio.lcoe_per_mwh}/MWh` : "N/A" },
+                  { label: "On-Site Renewable", value: `${portfolio.onsite_renewable_pct}%` },
+                  { label: "Ride-Through", value: `${portfolio.ride_through_days} day${portfolio.ride_through_days !== 1 ? "s" : ""}` },
                 ].map((row) => (
                   <div key={row.label} className="flex justify-between items-center">
                     <span className="text-gray-400 text-xs">{row.label}</span>

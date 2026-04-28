@@ -18,7 +18,6 @@ export interface SiteData {
 export interface Meta {
   description: string;
   last_updated: string;
-  data_sources: Record<string, string>;
 }
 
 export interface Site {
@@ -44,6 +43,15 @@ export interface SiteContext {
   grid_operator: { name: string; lmp_avg_per_mwh: number; note: string };
   utility: { name: string; tariff: string; current_constraints: string; emissions_factor_kgco2_per_mwh: number };
   solar_resource: { ghi_kwh_per_m2_per_day: number; peak_sun_hours_per_year: number; note: string };
+  site_footprint: {
+    rooftop_available_sqft: number;
+    rooftop_used_sqft: number;
+    rooftop_utilization_pct: number;
+    canopy_available_sqft: number;
+    canopy_used_sqft: number;
+    canopy_utilization_pct: number;
+    note: string;
+  };
   climate: { heating_degree_days: number; cooling_degree_days: number; free_cooling_months_per_year: number };
 }
 
@@ -68,13 +76,26 @@ export interface CoolingZone {
 }
 
 export interface ProposedPortfolio {
-  pv_array: {
+  pv_rooftop: {
     nameplate_mw_dc: number;
-    nameplate_mw_ac: number;
+    capex_dollars: number;
+    annual_capacity_factor_pct: number;
+    footprint_sqft: number;
+    footprint_utilization_pct: number;
+  };
+  pv_canopy: {
+    nameplate_mw_dc: number;
+    capex_dollars: number;
+    annual_capacity_factor_pct: number;
+    footprint_sqft: number;
+    footprint_utilization_pct: number;
+    note: string;
+  };
+  pv_total: {
+    nameplate_mw_dc: number;
+    annual_generation_mwh: number;
     annual_generation_gwh: number;
-    land_acres: number;
-    capacity_factor_pct: number;
-    siting_note: string;
+    share_of_load_pct: number;
   };
   bess: {
     energy_capacity_mwh: number;
@@ -82,66 +103,115 @@ export interface ProposedPortfolio {
     duration_hours: number;
     chemistry: string;
     round_trip_efficiency_pct: number;
+    annual_cycles: number;
+    capex_dollars: number;
   };
   diesel: {
     capacity_mw: number;
-    type: string;
-    fuel: string;
-    role: string;
+    unit_count: number;
+    unit_size_mw: number;
+    annual_runtime_hours: number;
     annual_capacity_factor_pct: number;
-    runtime_hours_per_year: number;
+    annual_generation_mwh: number;
+    annual_fuel_cost_dollars: number;
+    capex_dollars: number;
+    role: string;
+    note: string;
   };
-  grid_interconnection: { size_mw: number; role: string; ppa_structure: string };
+  totals: {
+    capex_dollars: number;
+    capex_millions: number;
+  };
 }
 
 export interface AlternativePortfolio {
   name: string;
   pv_mw: number;
   bess_mwh: number;
+  bess_mw: number;
   diesel_mw: number;
   capex_millions: number;
-  lcoe_per_mwh: number;
-  cfe_match_pct: number;
+  lcoe_per_mwh: number | null;
+  ride_through_days: number;
+  onsite_renewable_pct: number;
   recommended: boolean;
+  note?: string;
 }
 
 export interface Economics {
   capex_total_millions: number;
   capex_breakdown: {
-    pv_millions: number;
+    pv_rooftop_millions: number;
+    pv_canopy_millions: number;
     bess_millions: number;
     diesel_millions: number;
-    balance_of_system_millions: number;
   };
   npv_millions_20yr: number;
-  lcoe_per_mwh: number;
+  lcoe_per_mwh_optimized: number;
+  lcoe_per_mwh_reference: number;
+  lcoe_per_mwh_premium: number;
   payback_years: number;
-  irr_pct: number;
-  co2_avoided_tons_lifetime: number;
-  cfe_match_annual_pct: number;
-  cfe_match_hourly_pct: number;
-  cfe_match_industry_benchmark_pct: number;
-  annual_savings_breakdown: {
-    energy_cost_avoided_millions: number;
-    demand_charge_reduction_millions: number;
-    capacity_market_revenue_millions: number;
-    dr_program_revenue_millions: number;
-    cfe_premium_millions: number;
-    total_annual_millions: number;
+  payback_label: string;
+  irr_pct: number | null;
+  irr_label: string;
+  co2_balance: {
+    reference_emissions_tons_per_year: number;
+    optimized_emissions_tons_per_year: number;
+    net_change_tons_per_year: number;
+    pv_displaced_emissions_tons_per_year: number;
+    diesel_added_emissions_tons_per_year: number;
   };
-  early_deployment_value: {
+  cfe_metrics: {
+    onsite_renewable_share_of_load_pct: number;
+    onsite_renewable_share_note: string;
+    cfe_with_svp_grid_mix_estimate_pct: number;
+    industry_24_7_benchmark_pct: string;
+  };
+  annual_savings_breakdown: {
+    energy_charge_savings_thousands: number;
+    demand_charge_savings_thousands: number;
+    demand_response_revenue_thousands: number;
+    fuel_purchase_cost_thousands: number;
+    der_maintenance_cost_thousands: number;
+    total_opex_savings_thousands: number;
+  };
+  time_to_power_thesis: {
+    svp_queue_months: number;
+    btm_deployment_months: number;
+    months_saved: number;
     lost_revenue_per_year_millions: number;
     years_saved: number;
-    total_captured_millions: number;
+    early_revenue_captured_millions: number;
+    xendee_npv_year20_millions: number;
+    net_value_captured_millions: number;
+    headline: string;
+  };
+  hero_callouts: {
+    primary: string;
+    secondary: string;
+    tertiary: string;
+    financial_summary: string;
+  };
+  resilience: {
+    ride_through_days: number;
+    ride_through_window_modeled: string;
+    resilience_premium_dollars: number;
+    resilience_premium_per_kwh_met: number;
+    resilience_premium_per_hour: number;
+    industry_outage_cost_per_hour_range: string;
+    industry_outage_cost_note: string;
+    diesel_units: number;
+    diesel_total_capacity_mw: number;
   };
 }
 
 export interface SensitivityAnalysis {
   discount_rate: { default_pct: number; range_pct: [number, number]; npv_delta_per_pct: number };
-  ppa_price: { default_per_mwh: number; range_per_mwh: [number, number]; npv_delta_per_dollar: number };
-  natural_gas_price: { default_per_mmbtu: number; range_per_mmbtu: [number, number]; npv_delta_per_dollar: number };
+  svp_energy_price: { default_per_kwh: number; range_per_kwh: [number, number]; npv_delta_per_dollar: number };
+  diesel_fuel_price: { default_per_gallon: number; range_per_gallon: [number, number]; npv_delta_per_dollar: number };
   capacity_payment: { default_per_mw_day: number; range_per_mw_day: [number, number]; npv_delta_per_dollar: number };
   bess_capex: { default_per_kwh: number; range_per_kwh: [number, number]; npv_delta_per_dollar: number };
+  early_revenue: { default_millions_per_year: number; range_millions_per_year: [number, number]; thesis_value_per_dollar: number };
 }
 
 export interface Recommendation {
@@ -192,7 +262,9 @@ export interface Insights30day {
   cost_savings_vs_baseline_pct: number;
   average_pue: number;
   pue_change_vs_last_period: number;
-  carbon_avoided_tons: number;
+  carbon_avoided_tons_pv_gross: number;
+  carbon_added_tons_diesel: number;
+  carbon_net_tons: number;
   carbon_equivalent_miles: number;
   solar_contribution_pct: number;
   solar_generated_mwh: number;
@@ -202,5 +274,5 @@ export interface Insights30day {
   weekly_savings: number[];
   weekly_co2_intensity: number[];
   co2_target: number;
-  monthly_cfe_match: number[];
+  monthly_onsite_renewable_pct: number[];
 }

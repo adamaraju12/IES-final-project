@@ -108,32 +108,39 @@ function SliderRow({ label, value, min, max, step, unit, prefix = "", onChange }
 
 export default function BusinessCasePage() {
   const data = getSiteData();
-  const { economics, sensitivity_analysis, dispatch_24h, site } = data;
+  const { economics, sensitivity_analysis, dispatch_24h, site, proposed_portfolio } = data;
   const sa = sensitivity_analysis;
 
   // Sensitivity slider state
   const [discountRate, setDiscountRate] = useState(sa.discount_rate.default_pct);
-  const [ppaPrice, setPpaPrice] = useState(sa.ppa_price.default_per_mwh);
-  const [gasPrice, setGasPrice] = useState(sa.natural_gas_price.default_per_mmbtu);
+  const [svpPrice, setSvpPrice] = useState(sa.svp_energy_price.default_per_kwh);
+  const [dieselPrice, setDieselPrice] = useState(sa.diesel_fuel_price.default_per_gallon);
   const [capacityPayment, setCapacityPayment] = useState(sa.capacity_payment.default_per_mw_day);
   const [bessCapex, setBessCapex] = useState(sa.bess_capex.default_per_kwh);
+  const [earlyRevenue, setEarlyRevenue] = useState(sa.early_revenue.default_millions_per_year);
 
   // Live NPV calculation from slider deltas
   const baseNPV = economics.npv_millions_20yr;
   const liveNPV = +(
     baseNPV +
     (discountRate - sa.discount_rate.default_pct) * sa.discount_rate.npv_delta_per_pct +
-    (ppaPrice - sa.ppa_price.default_per_mwh) * sa.ppa_price.npv_delta_per_dollar +
-    (gasPrice - sa.natural_gas_price.default_per_mmbtu) * sa.natural_gas_price.npv_delta_per_dollar +
+    (svpPrice - sa.svp_energy_price.default_per_kwh) * sa.svp_energy_price.npv_delta_per_dollar +
+    (dieselPrice - sa.diesel_fuel_price.default_per_gallon) * sa.diesel_fuel_price.npv_delta_per_dollar +
     (capacityPayment - sa.capacity_payment.default_per_mw_day) * sa.capacity_payment.npv_delta_per_dollar +
     (bessCapex - sa.bess_capex.default_per_kwh) * sa.bess_capex.npv_delta_per_dollar
   ).toFixed(1);
 
-  // Payback approximation: inversely scale with NPV delta
+  // LCOE approximation from NPV delta
   const npvDelta = Number(liveNPV) - baseNPV;
-  const livePayback = Math.max(4, Math.min(15, +(economics.payback_years - npvDelta * 0.08).toFixed(1)));
-  // LCOE approximation
-  const liveLCOE = Math.max(50, Math.min(110, +(economics.lcoe_per_mwh - npvDelta * 0.3).toFixed(0)));
+  const liveLCOE = Math.max(120, Math.min(300, +(economics.lcoe_per_mwh_optimized - npvDelta * 0.3).toFixed(0)));
+
+  // Live thesis value from early revenue slider
+  const ttp = economics.time_to_power_thesis;
+  const liveThesisValue = +(
+    ttp.early_revenue_captured_millions +
+    (earlyRevenue - sa.early_revenue.default_millions_per_year) * sa.early_revenue.thesis_value_per_dollar
+  ).toFixed(1);
+  const liveNetValue = +(Number(liveThesisValue) + Number(liveNPV)).toFixed(1);
 
   // Dispatch chart data
   const dispatchData = dispatch_24h.hours.map((h, i) => ({
@@ -147,26 +154,26 @@ export default function BusinessCasePage() {
 
   // CapEx donut data
   const capexData = [
-    { name: "PV Array", value: economics.capex_breakdown.pv_millions },
+    { name: "Rooftop PV", value: economics.capex_breakdown.pv_rooftop_millions },
+    { name: "Canopy PV", value: economics.capex_breakdown.pv_canopy_millions },
     { name: "BESS", value: economics.capex_breakdown.bess_millions },
     { name: "Diesel Backup", value: economics.capex_breakdown.diesel_millions },
-    { name: "Balance of System", value: economics.capex_breakdown.balance_of_system_millions },
   ];
-  const CAPEX_COLORS = ["#00d4ff", "#7c3aed", "#f59e0b", "#10b981"];
+  const CAPEX_COLORS = ["#00d4ff", "#38bdf8", "#7c3aed", "#f59e0b"];
 
-  // Annual savings bar data
+  // Annual savings bar data (convert thousands → millions for display)
+  const asd = economics.annual_savings_breakdown;
   const savingsData = [
-    { name: "Energy Cost Avoided", value: economics.annual_savings_breakdown.energy_cost_avoided_millions },
-    { name: "Demand Charge Reduction", value: economics.annual_savings_breakdown.demand_charge_reduction_millions },
-    { name: "Capacity Market Revenue", value: economics.annual_savings_breakdown.capacity_market_revenue_millions },
-    { name: "DR Program Revenue", value: economics.annual_savings_breakdown.dr_program_revenue_millions },
-    { name: "CFE Premium", value: economics.annual_savings_breakdown.cfe_premium_millions },
+    { name: "Energy Charge Savings", value: +(asd.energy_charge_savings_thousands / 1000).toFixed(2) },
+    { name: "Demand Charge Savings", value: +(asd.demand_charge_savings_thousands / 1000).toFixed(2) },
+    { name: "Demand Response Revenue", value: +(asd.demand_response_revenue_thousands / 1000).toFixed(2) },
+    { name: "Diesel Fuel Cost", value: +(asd.fuel_purchase_cost_thousands / 1000).toFixed(2) },
+    { name: "DER Maintenance", value: +(asd.der_maintenance_cost_thousands / 1000).toFixed(2) },
   ];
 
   // Time-to-power timeline data
   const queueYears = site.interconnection_queue_years;
   const ourMonths = site.our_time_to_power_months;
-  const earlyValue = economics.early_deployment_value;
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-10 pb-16">
@@ -180,57 +187,79 @@ export default function BusinessCasePage() {
       </div>
 
       {/* ── Hero KPI tiles ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-        <KPITile
-          label="Total CapEx"
-          value={`$${economics.capex_total_millions}M`}
-          context="PV + BESS + diesel + BOS"
-        />
-        <KPITile
-          label="NPV (20 yr)"
-          value={`$${economics.npv_millions_20yr}M`}
-          highlight
-          context={`IRR ${economics.irr_pct}%`}
-        />
-        <KPITile
-          label="LCOE"
-          value={`$${economics.lcoe_per_mwh}`}
-          unit="/MWh"
-          context="Blended cost of energy"
-        />
-        <KPITile
-          label="Payback"
-          value={economics.payback_years}
-          unit="yrs"
-          context="Simple payback period"
-        />
-        <KPITile
-          label="CO₂ Avoided"
-          value={(economics.co2_avoided_tons_lifetime / 1000).toFixed(0)}
-          unit="kt"
-          context="Lifetime tons avoided"
-        />
-        <KPITile
-          label="CFE Match"
-          value={economics.cfe_match_annual_pct}
-          unit="%"
-          context="Annual 24/7 CFE score"
-          highlight
-        />
+      <div className="space-y-3">
+        {/* Primary thesis tiles */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          <KPITile
+            label="Time to Power"
+            value={economics.hero_callouts.primary}
+            highlight
+          />
+          <KPITile
+            label="Early Revenue Captured"
+            value={economics.hero_callouts.secondary}
+            highlight
+          />
+          <KPITile
+            label="Resilience"
+            value={economics.hero_callouts.tertiary}
+            highlight
+          />
+          <KPITile
+            label="Net Value"
+            value={economics.hero_callouts.financial_summary}
+            highlight
+          />
+        </div>
+        {/* Secondary energy financials — de-emphasized */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 opacity-60">
+          <KPITile
+            label="Total CapEx"
+            value={`$${economics.capex_total_millions}M`}
+            context="Rooftop PV + Canopy PV + BESS + Diesel"
+          />
+          <KPITile
+            label="NPV (20 yr)"
+            value={`$${economics.npv_millions_20yr}M`}
+            context="Energy arbitrage NPV — thesis is time-to-power above"
+          />
+          <KPITile
+            label="CO₂ Net Change"
+            value={`+${economics.co2_balance.net_change_tons_per_year}`}
+            unit="t/yr"
+            context={`PV −${economics.co2_balance.pv_displaced_emissions_tons_per_year.toLocaleString()} t · Diesel +${economics.co2_balance.diesel_added_emissions_tons_per_year.toLocaleString()} t`}
+          />
+          <KPITile
+            label="On-Site Renewable"
+            value={economics.cfe_metrics.onsite_renewable_share_of_load_pct}
+            unit="%"
+            context="On-site PV / total load"
+          />
+        </div>
       </div>
 
       {/* ── Resilience callout ── */}
-      <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 flex items-start gap-3">
-        <div className="text-blue-400 text-lg mt-0.5 flex-shrink-0">🛡</div>
-        <div>
-          <p className="text-blue-300 font-semibold text-sm">
-            Resilience: ~36 hours of islanding capability
-          </p>
-          <p className="text-blue-400/70 text-xs mt-1">
-            12 MW diesel backup (200 hrs/yr) + 100 MWh BESS provides full-load islanding for 24–48 hours; longer under partial load curtailment
-          </p>
-        </div>
-      </div>
+      {(() => {
+        const r = economics.resilience;
+        const unitMw = r.diesel_total_capacity_mw / r.diesel_units;
+        const premiumM = (r.resilience_premium_dollars / 1_000_000).toFixed(2);
+        return (
+          <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 flex items-start gap-3">
+            <div className="text-blue-400 text-lg mt-0.5 flex-shrink-0">🛡</div>
+            <div>
+              <p className="text-blue-300 font-semibold text-sm">
+                {r.ride_through_days}-day grid outage ride-through
+              </p>
+              <p className="text-blue-400/70 text-xs mt-1">
+                {r.diesel_units} × {unitMw} MW diesel units ({r.diesel_total_capacity_mw} MW total) + {proposed_portfolio.bess.energy_capacity_mwh} MWh BESS.
+                {" "}Modeled outage window: {r.ride_through_window_modeled}.
+                {" "}Resilience premium: ${premiumM}M (${r.resilience_premium_per_kwh_met}/kWh met, ${r.resilience_premium_per_hour.toLocaleString()}/hour).
+                {" "}{r.industry_outage_cost_note}
+              </p>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ── Time-to-Power Timeline ── */}
       <section>
@@ -327,10 +356,10 @@ export default function BusinessCasePage() {
             <div className="text-2xl">⚡</div>
             <div>
               <p className="text-green-300 font-semibold text-sm">
-                ${earlyValue.total_captured_millions}M revenue captured by deploying {earlyValue.years_saved} years earlier
+                ${ttp.early_revenue_captured_millions}M revenue captured by deploying {ttp.years_saved} years earlier
               </p>
               <p className="text-green-600 text-xs mt-0.5">
-                Based on ${earlyValue.lost_revenue_per_year_millions}M/yr in foregone data center revenue during grid wait
+                Based on ${ttp.lost_revenue_per_year_millions}M/yr in foregone data center revenue during grid wait
               </p>
             </div>
           </div>
@@ -396,9 +425,9 @@ export default function BusinessCasePage() {
           {/* CFE match pills */}
           <div className="flex flex-wrap gap-3 mt-4 justify-center">
             {[
-              { label: "Annual PPA Match", value: `${economics.cfe_match_annual_pct}%`, highlight: true },
-              { label: "Hourly CFE Match", value: `${economics.cfe_match_hourly_pct}%`, highlight: true },
-              { label: "Industry Benchmark", value: `${economics.cfe_match_industry_benchmark_pct}%`, highlight: false },
+              { label: "On-Site Renewable Share", value: `${economics.cfe_metrics.onsite_renewable_share_of_load_pct}%`, highlight: true },
+              { label: "With SVP Grid Mix (est.)", value: `~${economics.cfe_metrics.cfe_with_svp_grid_mix_estimate_pct}%`, highlight: true },
+              { label: "Industry 24/7 Benchmark", value: `${economics.cfe_metrics.industry_24_7_benchmark_pct}%`, highlight: false },
             ].map((pill) => (
               <div
                 key={pill.label}
@@ -412,6 +441,10 @@ export default function BusinessCasePage() {
               </div>
             ))}
           </div>
+          {/* CO2 note */}
+          <p className="text-gray-500 text-xs mt-4 text-center">
+            PV and diesel emissions nearly cancel (+0.1% net). Meaningful decarbonization at this site requires an offsite PPA or grid-mix improvement.
+          </p>
         </div>
       </section>
 
@@ -453,8 +486,8 @@ export default function BusinessCasePage() {
         {/* Annual Savings Bar */}
         <div>
           <SectionHeader
-            title="Annual Savings & Revenue"
-            subtitle={`$${economics.annual_savings_breakdown.total_annual_millions}M total per year`}
+            title="Annual Savings & Costs"
+            subtitle={`$${(asd.total_opex_savings_thousands / 1000).toFixed(1)}M net OPEX savings per year`}
           />
           <div className="bg-navy-card rounded-lg border border-navy-border p-4 pt-6">
             <ResponsiveContainer width="100%" height={240}>
@@ -508,24 +541,24 @@ export default function BusinessCasePage() {
                 onChange={setDiscountRate}
               />
               <SliderRow
-                label="PPA Price"
-                value={ppaPrice}
-                min={sa.ppa_price.range_per_mwh[0]}
-                max={sa.ppa_price.range_per_mwh[1]}
-                step={1}
-                unit="/MWh"
+                label="SVP Energy Price"
+                value={svpPrice}
+                min={sa.svp_energy_price.range_per_kwh[0]}
+                max={sa.svp_energy_price.range_per_kwh[1]}
+                step={0.01}
+                unit="/kWh"
                 prefix="$"
-                onChange={setPpaPrice}
+                onChange={setSvpPrice}
               />
               <SliderRow
-                label="Natural Gas Price"
-                value={gasPrice}
-                min={sa.natural_gas_price.range_per_mmbtu[0]}
-                max={sa.natural_gas_price.range_per_mmbtu[1]}
+                label="Diesel Fuel Price"
+                value={dieselPrice}
+                min={sa.diesel_fuel_price.range_per_gallon[0]}
+                max={sa.diesel_fuel_price.range_per_gallon[1]}
                 step={0.25}
-                unit="/MMBtu"
+                unit="/gal"
                 prefix="$"
-                onChange={setGasPrice}
+                onChange={setDieselPrice}
               />
               <SliderRow
                 label="Capacity Payment"
@@ -546,6 +579,16 @@ export default function BusinessCasePage() {
                 unit="/kWh"
                 prefix="$"
                 onChange={setBessCapex}
+              />
+              <SliderRow
+                label="Early Revenue ($M/yr)"
+                value={earlyRevenue}
+                min={sa.early_revenue.range_millions_per_year[0]}
+                max={sa.early_revenue.range_millions_per_year[1]}
+                step={0.5}
+                unit="M/yr"
+                prefix="$"
+                onChange={setEarlyRevenue}
               />
             </div>
 
@@ -578,7 +621,7 @@ export default function BusinessCasePage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-[#0d1e35] rounded-lg p-4 border border-navy-border">
                   <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">Payback</p>
-                  <p className="text-white text-2xl font-bold tabular-nums">{livePayback}<span className="text-accent text-sm ml-1">yrs</span></p>
+                  <p className="text-white text-xl font-bold">{economics.payback_label}</p>
                 </div>
                 <div className="bg-[#0d1e35] rounded-lg p-4 border border-navy-border">
                   <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">LCOE</p>
@@ -586,13 +629,29 @@ export default function BusinessCasePage() {
                 </div>
               </div>
 
+              {/* Live thesis value */}
+              <div className="bg-[#0d1e35] rounded-lg p-4 border border-navy-border space-y-2">
+                <p className="text-gray-400 text-xs uppercase tracking-wider">Thesis Value (Time-to-Power)</p>
+                <div className="flex justify-between items-baseline">
+                  <span className="text-gray-400 text-xs">Early revenue capture</span>
+                  <span className="text-green-400 text-lg font-bold tabular-nums">${liveThesisValue}M</span>
+                </div>
+                <div className="flex justify-between items-baseline border-t border-navy-border pt-2">
+                  <span className="text-gray-400 text-xs">Net value (+ energy NPV)</span>
+                  <span className={`text-lg font-bold tabular-nums ${Number(liveNetValue) >= 0 ? "text-green-400" : "text-red-400"}`}>
+                    ${liveNetValue}M
+                  </span>
+                </div>
+              </div>
+
               <button
                 onClick={() => {
                   setDiscountRate(sa.discount_rate.default_pct);
-                  setPpaPrice(sa.ppa_price.default_per_mwh);
-                  setGasPrice(sa.natural_gas_price.default_per_mmbtu);
+                  setSvpPrice(sa.svp_energy_price.default_per_kwh);
+                  setDieselPrice(sa.diesel_fuel_price.default_per_gallon);
                   setCapacityPayment(sa.capacity_payment.default_per_mw_day);
                   setBessCapex(sa.bess_capex.default_per_kwh);
+                  setEarlyRevenue(sa.early_revenue.default_millions_per_year);
                 }}
                 className="text-xs text-gray-500 hover:text-gray-300 underline underline-offset-2 transition-colors self-start"
               >
