@@ -227,11 +227,6 @@ export default function PathwayComparisonPage() {
                         Optimal for {selectedOption.label}
                       </span>
                     )}
-                    {pathway.recommended && (
-                      <span className="text-xs bg-green-500/15 text-green-400 border border-green-500/30 px-2 py-0.5 rounded-full whitespace-nowrap">
-                        Recommended
-                      </span>
-                    )}
                     {isPending && (
                       <span className="text-xs bg-gray-500/15 text-gray-400 border border-gray-500/30 px-2 py-0.5 rounded-full whitespace-nowrap">
                         Data pending
@@ -296,6 +291,13 @@ export default function PathwayComparisonPage() {
           })}
         </div>
       </section>
+
+      {/* ── Framing note ── */}
+      <p className="text-gray-500 text-sm italic">
+        Our Business Case analysis explores the diesel-primary pathway in depth as a representative
+        case study. Different operators applying this framework will arrive at different
+        recommendations based on their priorities.
+      </p>
 
       {/* ── Why this pathway? ── */}
       <section>

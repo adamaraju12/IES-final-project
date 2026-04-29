@@ -527,7 +527,7 @@
         "id": "diesel_primary",
         "name": "Diesel-Primary",
         "tagline": "Fastest deployable bridge to grid",
-        "recommended": true,
+        "recommended": false,
         "capex_millions": 34.28,
         "deployment_months": 18,
         "co2_lifetime_kt": 2.5,
