@@ -662,6 +662,30 @@ export default function BusinessCasePage() {
         </div>
       </section>
 
+      {/* ── Deployment timeline & revenue methodology ── */}
+      <section>
+        <div className="bg-navy-card rounded-lg border border-navy-border p-4 space-y-3">
+          <p className="text-gray-500 text-xs leading-relaxed">
+            <span className="text-gray-400 font-medium">Deployment timelines: </span>
+            Public benchmarks for comparable installations, not parametrically modeled.
+            Grid timeline (~3.5 years) reflects Silicon Valley Power&apos;s published interconnection
+            queue for new large loads. Behind-the-meter pathway timelines (diesel 18 mo, fuel cell
+            12–18 mo, gas turbine 9–15 mo) are drawn from industry sources including CBRE data center
+            reports, vendor-published lead times, and recent comparable deployments such as ECL&apos;s
+            CSC-1 (~12 months for 35 MW hybrid). Diesel timeline includes padding for BAAQMD air
+            permitting friction associated with primary-power use, which is non-standard for diesel
+            and adds permitting risk versus backup-only configurations.
+          </p>
+          <p className="text-gray-500 text-xs leading-relaxed">
+            <span className="text-gray-400 font-medium">Time-to-power revenue capture: </span>
+            Computed as $18.5M/year × 2 years = $37M at default slider position. The $18.5M/year
+            figure represents conservative net revenue contribution during the 2-year deployment
+            window, accounting for tenant ramp-up and phased commissioning rather than full 48 MW
+            utilization from day one. Per-MW-year sensitivity can be explored via the slider above.
+          </p>
+        </div>
+      </section>
+
     </div>
   );
 }

@@ -371,6 +371,7 @@
       "lost_revenue_per_year_millions": 18.5,
       "years_saved": 2.0,
       "early_revenue_captured_millions": 37.0,
+      "_note": "Coupled to years_saved=2 and thesis_value_per_dollar=2. If years_saved changes, update both early_revenue_captured_millions and thesis_value_per_dollar to maintain consistency.",
       "xendee_npv_year20_millions": -19.68,
       "net_value_captured_millions": 17.32,
       "headline": "$17.3M net value: $37M early-revenue capture minus $19.7M Xendee energy NPV.",
@@ -510,8 +511,8 @@
     "monthly_onsite_renewable_pct": [2.4, 2.5, 2.6, 2.5, 2.5, 2.5]
   },
   "pathway_comparison": {
-    "_source": "assumption (back-of-envelope comparative figures sourced by team to enable trade-off analysis; only diesel_primary maps directly to the Xendee model)",
-    "_note": "These are comparative values for a side-by-side analysis, not full Xendee re-runs. Diesel-primary numbers reflect the Xendee Apr 27 2026 run. Fuel cells and gas_grid are sourced from public benchmarks.",
+    "_source": "Xendee runs + external PPA benchmarks (diesel_primary: Xendee Apr 27 2026; gas_turbine: Jose's Xendee Apr 29 2026; fuel_cells: external Bloom Energy PPA benchmarks, illustrative)",
+    "_note": "CO2 values are kt net vs. grid reference over 20 years — negative means net carbon reduction relative to grid baseline. Diesel and gas turbine figures are from Xendee. Fuel cell CO2 is illustrative from public benchmarks, not a Xendee run. Deployment months are midpoints of estimated ranges (gas turbine: 9–15 mo; fuel cells: 12–18 mo).",
     "dimensions": [
       { "key": "capex_millions", "label": "Total CapEx", "unit": "$M", "direction": "lower_is_better" },
       { "key": "deployment_months", "label": "Deployment Timeline", "unit": "months", "direction": "lower_is_better" },
@@ -529,7 +530,7 @@
         "recommended": true,
         "capex_millions": 34.28,
         "deployment_months": 18,
-        "co2_lifetime_kt": null,
+        "co2_lifetime_kt": 2.5,
         "npv_20yr_millions": -19.68,
         "footprint_sqft": 305000,
         "deployment_risk": "Low",
@@ -539,30 +540,30 @@
       {
         "id": "fuel_cells",
         "name": "Fuel Cells (Bloom SOFC)",
-        "tagline": "Cleaner gas, hyperscaler-proven",
+        "tagline": "Zero CapEx PPA — no on-site footprint",
         "recommended": false,
-        "capex_millions": null,
-        "deployment_months": null,
-        "co2_lifetime_kt": null,
-        "npv_20yr_millions": null,
-        "footprint_sqft": null,
-        "deployment_risk": null,
-        "best_for": null,
-        "_source": "pending team research"
+        "capex_millions": 0,
+        "deployment_months": 15,
+        "co2_lifetime_kt": 2.24,
+        "npv_20yr_millions": -1.56,
+        "footprint_sqft": 0,
+        "deployment_risk": "Medium",
+        "best_for": "ESG-committed reliability",
+        "_source": "external benchmarks (Bloom Energy PPA model; illustrative, not Xendee-modeled)"
       },
       {
         "id": "gas_grid",
-        "name": "Gas / Grid Hybrid",
-        "tagline": "Co-located gas plant + phased grid upgrade",
+        "name": "Gas Turbine (45 MW)",
+        "tagline": "On-site 45 MW gas plant with PV layer — Xendee-modeled",
         "recommended": false,
-        "capex_millions": null,
-        "deployment_months": null,
-        "co2_lifetime_kt": null,
-        "npv_20yr_millions": null,
-        "footprint_sqft": null,
-        "deployment_risk": null,
-        "best_for": null,
-        "_source": "pending team research"
+        "capex_millions": 36.78,
+        "deployment_months": 12,
+        "co2_lifetime_kt": -23.7,
+        "npv_20yr_millions": -12.31,
+        "footprint_sqft": 1380,
+        "deployment_risk": "Medium",
+        "best_for": "Constant high load + gas access",
+        "_source": "xendee (Jose's Apr 29 2026 run)"
       }
     ],
     "optimize_for_options": [

@@ -72,25 +72,28 @@ function PerformanceDot({ color }: { color: "green" | "yellow" | "red" }) {
 
 const CALLOUT_COPY: Record<string, string> = {
   deployment_months:
-    "If your priority is Time to Power, the Diesel-Primary pathway deploys fastest at 18 months. " +
-    "Diesel generators have proven supply chains, no custom permitting complexity, and can be sited " +
-    "entirely behind the meter. The trade-off is the highest 20-year carbon exposure of the three " +
-    "options — a manageable risk if the bridge period is short.",
+    "If your priority is Time to Power, the Gas Turbine leads at an estimated 12 months (median of a " +
+    "9–15 month range), followed by Fuel Cells at ~15 months and Diesel-Primary at 18 months. " +
+    "Gas turbine permitting carries more complexity than diesel, but the overall deployment timeline " +
+    "is faster. Diesel-Primary remains the lowest-risk option if schedule certainty matters more " +
+    "than schedule speed.",
   co2_lifetime_kt:
-    "If your priority is Carbon Footprint, fuel cells or a gas/grid hybrid are likely to outperform " +
-    "diesel over a 20-year horizon. SOFC systems (e.g., Bloom Energy) typically achieve significantly " +
-    "lower lifecycle emissions than diesel-primary, with no NOx or particulate exposure during operation. " +
-    "Full comparison data is pending from the team.",
+    "If your priority is Carbon Footprint, the Gas Turbine achieves a net-negative 20-year CO2 " +
+    "position (–23.7 kt vs. grid reference), driven by the combined PV layer offsetting grid " +
+    "emissions at scale. Fuel Cells come in at 2.24 kt and Diesel-Primary at 2.5 kt — both net " +
+    "positive emitters over 20 years. Note: fuel cell CO2 is illustrative from public benchmarks, " +
+    "not a full Xendee run.",
   capex_millions:
-    "If your priority is Upfront Cost, the Diesel-Primary pathway at $34.28M CapEx is the current " +
-    "baseline. Fuel cell or gas/grid alternatives typically carry higher installed costs but may " +
-    "recover through lower operating expenses over 20 years. Final comparison depends on vendor " +
-    "quotes — data pending.",
+    "If your priority is Upfront Cost, the Fuel Cell PPA structure has zero CapEx — equipment is " +
+    "owned by the developer and the operator pays a capacity fee. Diesel-Primary at $34.28M and " +
+    "Gas Turbine at $36.78M require full capital outlay. The trade-off is that a PPA locks in a " +
+    "long-term contract without asset ownership or balance-sheet flexibility.",
   npv_20yr_millions:
-    "If your priority is Long-term Economics, a 20-year NPV comparison weighs CapEx, fuel, O&M, " +
-    "and avoided grid charges together. The Diesel-Primary pathway currently shows –$19.68M NPV. " +
-    "Fuel cells and gas/grid hybrid figures are pending — those pathways may improve the NPV picture " +
-    "through lower fuel costs and grid arbitrage opportunities.",
+    "If your priority is Long-term Economics, the Fuel Cell PPA leads with –$1.56M NPV over 20 " +
+    "years, reflecting lower fuel and O&M costs relative to owned generation assets. Gas Turbine " +
+    "comes in at –$12.31M and Diesel-Primary at –$19.68M. All three pathways are net-negative NPV " +
+    "under current model assumptions — this site's value proposition is speed-to-revenue and " +
+    "resilience, not energy cost arbitrage.",
 };
 
 export default function PathwayComparisonPage() {
@@ -314,10 +317,12 @@ export default function PathwayComparisonPage() {
         <div className="bg-navy-card rounded-lg border border-navy-border p-4">
           <p className="text-gray-500 text-xs leading-relaxed">
             <span className="text-gray-400 font-medium">Methodology: </span>
-            Comparative figures are sourced from public benchmarks (Bloom Energy, Caterpillar, BAAQMD
-            permit timelines, public hyperscaler disclosures). Only the diesel-primary pathway maps
-            directly to our Xendee simulation. Fuel cells and gas/grid hybrid figures are illustrative
-            for trade-off analysis.
+            Diesel-Primary figures reflect the Xendee Apr 27 2026 run. Gas Turbine figures reflect
+            Jose&apos;s Xendee Apr 29 2026 run (45 MW gas plant + existing PV portfolio). Fuel Cell
+            figures are illustrative benchmarks from Bloom Energy PPA disclosures — not a Xendee
+            run; treat with caution, especially the 20-year CO2 figure. CO2 values are kt net vs.
+            grid reference over 20 years (negative = net carbon reduction). Deployment months are
+            midpoints of estimated ranges.
           </p>
         </div>
       </section>
