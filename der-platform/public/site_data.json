@@ -540,13 +540,15 @@
       {
         "id": "fuel_cells",
         "name": "Fuel Cells (Bloom SOFC)",
-        "tagline": "Zero CapEx PPA — no on-site footprint",
+        "tagline": "Zero CapEx PPA, on-site equipment.",
+        "description": "Bloom SOFC modules installed on-site; financed via fixed-price power purchase agreement, shifting capital costs to ongoing OpEx.",
         "recommended": false,
         "capex_millions": 0,
         "deployment_months": 15,
         "co2_lifetime_kt": 2.24,
         "npv_20yr_millions": -1.56,
-        "footprint_sqft": 0,
+        "footprint_sqft": 19747,
+        "_footprint_note": "Footprint reflects on-site Bloom SOFC equipment installation. PPA structure means zero operator CapEx but equipment is physically deployed on the site.",
         "deployment_risk": "Medium",
         "best_for": "ESG-committed reliability",
         "_source": "external benchmarks (Bloom Energy PPA model; illustrative, not Xendee-modeled)"
